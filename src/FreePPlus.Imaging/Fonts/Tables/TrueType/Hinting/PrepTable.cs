@@ -1,0 +1,42 @@
+// Copyright (c) Six Labors.
+// Licensed under the Apache License, Version 2.0.
+
+#pragma warning disable CS8632
+
+namespace FreePPlus.Imaging.Fonts.Tables.TrueType.Hinting;
+
+//was previously: namespace SixLabors.Fonts.Tables.TrueType.Hinting;
+
+internal class PrepTable : Table
+{
+    internal const string TableName = "prep";
+
+    public PrepTable(byte[] instructions)
+    {
+        Instructions = instructions;
+    }
+
+    public byte[] Instructions { get; }
+
+    public static PrepTable? Load(FontReader fontReader)
+    {
+        if (!fontReader.TryGetReaderAtTablePosition(TableName, out var binaryReader, out var header)) return null;
+
+        using (binaryReader)
+        {
+            return Load(binaryReader, header.Length);
+        }
+    }
+
+    public static PrepTable Load(BigEndianBinaryReader reader, uint tableLength)
+    {
+        // HEADER
+
+        // Type     | Description
+        // ---------| ------------
+        // uint8[n] | Set of instructions executed whenever point size or font or transformation change. n is the number of uint8 items that fit in the size of the table.
+        var instructions = reader.ReadUInt8Array((int)tableLength);
+
+        return new PrepTable(instructions);
+    }
+}
