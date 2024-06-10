@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>FreePPlus.LgplLicenseForever</id>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <authors>Jeremy Ellis</authors>
     <title>FreePPlus (with future license commitment)</title>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">LGPL-3.0-or-later</license>
     <projectUrl>https://github.com/ellisnet/FreePPlus</projectUrl>
     <description>FreePPlus is a .NET library that reads and writes Excel files using the Office Open XML format (xlsx) - based on a fork of EPPlus v4.5.3.3. This package has a commitment to never be available except under a LGPL v3 open source license.</description>
-    <releaseNotes>v0.0.1 - Initial release.</releaseNotes>
+    <releaseNotes>v0.0.2 - Minor tweaks.</releaseNotes>
     <copyright>Copyright 2024 Ellisnet - Jeremy Ellis</copyright>
     <tags>excel spreadsheet epplus</tags>
     <readme>docs\readme.md</readme>

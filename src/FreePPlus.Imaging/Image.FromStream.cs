@@ -4,6 +4,8 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using FreePPlus.Imaging.Formats;
 using FreePPlus.Imaging.PixelFormats;
 
@@ -196,6 +198,17 @@ public abstract partial class Image
         where TPixel : unmanaged, IPixel<TPixel>
     {
         return Load<TPixel>(Configuration.Default, stream);
+    }
+
+    public static async Task<(Image<TPixel> Image, IImageFormat Format)> LoadWithFormatAsync<TPixel>(
+        Stream stream, CancellationToken cancellationToken = default)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        return await Task.Run(() =>
+        {
+            var result = Load<TPixel>(stream, out var format);
+            return (result, format);
+        }, cancellationToken);
     }
 
     /// <summary>
