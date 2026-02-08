@@ -32,7 +32,7 @@
 
 using System;
 using System.Diagnostics;
-using FreePPlus.Imaging.Fonts;
+using CodeBrix.Imaging.Fonts;
 
 namespace OfficeOpenXml.Style;
 

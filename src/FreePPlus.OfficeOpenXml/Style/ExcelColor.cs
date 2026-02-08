@@ -31,7 +31,7 @@
  *******************************************************************************/
 
 using System;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using OfficeOpenXml.Style.XmlAccess;
 
 namespace OfficeOpenXml.Style;

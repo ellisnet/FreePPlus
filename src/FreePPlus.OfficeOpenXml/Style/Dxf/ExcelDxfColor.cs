@@ -1,5 +1,5 @@
 ﻿using System;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.Style.Dxf;
 

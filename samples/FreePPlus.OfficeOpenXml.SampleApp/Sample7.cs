@@ -2,7 +2,7 @@
 using OfficeOpenXml.Style;
 using System;
 
-using Color = FreePPlus.Imaging.Color;
+using Color = CodeBrix.Imaging.Color;
 
 namespace FreePPlus.OfficeOpenXml.SampleApp;
 

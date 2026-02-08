@@ -30,7 +30,7 @@
  * Eyal Seagull				Added							2012-04-03
  *******************************************************************************/
 
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.Style;

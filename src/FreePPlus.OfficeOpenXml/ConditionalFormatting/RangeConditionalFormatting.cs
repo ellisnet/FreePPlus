@@ -29,7 +29,7 @@
  * Eyal Seagull       Conditional Formatting    2012-04-03
  *******************************************************************************/
 
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using OfficeOpenXml.Utils;
 

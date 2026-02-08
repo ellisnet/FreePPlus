@@ -35,7 +35,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Packaging;
 using OfficeOpenXml.Table.PivotTable;

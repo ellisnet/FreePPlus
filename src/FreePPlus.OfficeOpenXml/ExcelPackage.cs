@@ -39,6 +39,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using CodeBrix.Imaging.Formats.Jpeg;
 using Microsoft.Extensions.Configuration;
 using OfficeOpenXml.Compatibility;
 using OfficeOpenXml.Encryption;
@@ -305,7 +306,7 @@ public sealed class ExcelPackage : IDisposable
                 if (uri == null)
                 {
                     uri = GetNewUri(Package, "/xl/media/image{0}.jpg");
-                    imagePart = Package.CreatePart(uri, "image/jpeg", CompressionLevel.None);
+                    imagePart = Package.CreatePart(uri, JpegFormat.FormatMimeType, CompressionLevel.None);
                 }
                 else
                 {

@@ -1,10 +1,10 @@
-﻿using FreePPlus.Imaging;
+﻿using CodeBrix.Imaging;
 using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using System;
 using System.IO;
-using FluentAssertions;
+using SilverAssertions;
 using Xunit;
 
 #pragma warning disable IDE0059

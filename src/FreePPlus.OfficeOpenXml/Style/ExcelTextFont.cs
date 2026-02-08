@@ -33,8 +33,8 @@
 using System;
 using System.Globalization;
 using System.Xml;
-using FreePPlus.Imaging;
-using FreePPlus.Imaging.Fonts;
+using CodeBrix.Imaging;
+using CodeBrix.Imaging.Fonts;
 
 namespace OfficeOpenXml.Style;
 

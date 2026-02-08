@@ -113,7 +113,8 @@ public class ExcelVbaSignature
                     {
                         //Add property values here...
                         case 0x20:
-                            Certificate = new X509Certificate2(value);
+                            //old: Certificate = new X509Certificate2(value);
+                            Certificate = X509CertificateLoader.LoadCertificate(value);
                             break;
                     }
                 }
@@ -134,6 +135,7 @@ public class ExcelVbaSignature
             Verifier = null;
         }
     }
+
     //Create Oid from a bytearray
     //private string ReadHash(byte[] content)
     //{
@@ -162,11 +164,11 @@ public class ExcelVbaSignature
     //        }
     //    }
 
-
     //    string oId = builder.ToString();
 
     //    return oId;
     //}
+
     internal void Save(ExcelVbaProject proj)
     {
         if (Certificate == null) return;

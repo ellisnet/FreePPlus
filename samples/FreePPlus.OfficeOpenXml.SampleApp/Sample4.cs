@@ -29,7 +29,7 @@
  * Jan Källman		Added		10-SEP-2009
  *******************************************************************************/
 
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using Microsoft.Data.SqlClient;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;

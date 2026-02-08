@@ -33,7 +33,7 @@ using OfficeOpenXml.Table;
 using System.Collections.Generic;
 using System.Globalization;
 
-using Color = FreePPlus.Imaging.Color;
+using Color = CodeBrix.Imaging.Color;
 
 namespace FreePPlus.OfficeOpenXml.SampleApp;
 

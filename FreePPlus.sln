@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34309.116
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreePPlus.OfficeOpenXml", "src\FreePPlus.OfficeOpenXml\FreePPlus.OfficeOpenXml.csproj", "{7ECBE3EF-5FF8-4689-A0C2-A7CBD3C22C81}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreePPlus.Imaging", "src\FreePPlus.Imaging\FreePPlus.Imaging.csproj", "{A34CBECF-87C5-40A8-8D93-7946AF9A50EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BFC10E81-FB4A-4646-910B-FBF76DBB9B3C}"
 EndProject
@@ -15,7 +13,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{68BD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreePPlus.OfficeOpenXml.SampleApp", "samples\FreePPlus.OfficeOpenXml.SampleApp\FreePPlus.OfficeOpenXml.SampleApp.csproj", "{7D1C1DDB-4061-4293-8DA3-991C91BAA1C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePPlus.Imaging.Tests", "tests\FreePPlus.Imaging.Tests\FreePPlus.Imaging.Tests.csproj", "{C8398D3C-677A-4789-9C1A-5FBB3220B5D9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imaging", "Imaging", "{804BEA73-A3BA-4ACA-9DC5-7BB428517B9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBrix.Imaging", "..\CodeBrix.Imaging-private\src\CodeBrix.Imaging\CodeBrix.Imaging.csproj", "{D30F27DC-0531-5091-28D7-CF8D95DFD129}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBrix.Imaging.Tests", "..\CodeBrix.Imaging-private\tests\CodeBrix.Imaging.Tests\CodeBrix.Imaging.Tests.csproj", "{07EF6E45-8F88-98A7-EE08-421B1F25427B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SilverAssertions", "SilverAssertions", "{87F125D6-E545-455B-81F2-DD85589BD041}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DennisDoomen.Reflectify", "..\SilverAssertions-private\libs\Reflectify\DennisDoomen.Reflectify\DennisDoomen.Reflectify.csproj", "{6E8B40D8-E65C-816F-9E5C-47C2D787272C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAssertions", "..\SilverAssertions-private\src\SilverAssertions\SilverAssertions.csproj", "{F24123D7-4FEC-C954-F376-52CA775F6B4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +35,6 @@ Global
 		{7ECBE3EF-5FF8-4689-A0C2-A7CBD3C22C81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7ECBE3EF-5FF8-4689-A0C2-A7CBD3C22C81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7ECBE3EF-5FF8-4689-A0C2-A7CBD3C22C81}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A34CBECF-87C5-40A8-8D93-7946AF9A50EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A34CBECF-87C5-40A8-8D93-7946AF9A50EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A34CBECF-87C5-40A8-8D93-7946AF9A50EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A34CBECF-87C5-40A8-8D93-7946AF9A50EF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5DFCCF44-50F2-423E-8A38-6BF14780B983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5DFCCF44-50F2-423E-8A38-6BF14780B983}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DFCCF44-50F2-423E-8A38-6BF14780B983}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,10 +43,22 @@ Global
 		{7D1C1DDB-4061-4293-8DA3-991C91BAA1C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D1C1DDB-4061-4293-8DA3-991C91BAA1C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D1C1DDB-4061-4293-8DA3-991C91BAA1C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C8398D3C-677A-4789-9C1A-5FBB3220B5D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8398D3C-677A-4789-9C1A-5FBB3220B5D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8398D3C-677A-4789-9C1A-5FBB3220B5D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8398D3C-677A-4789-9C1A-5FBB3220B5D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D30F27DC-0531-5091-28D7-CF8D95DFD129}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D30F27DC-0531-5091-28D7-CF8D95DFD129}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D30F27DC-0531-5091-28D7-CF8D95DFD129}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D30F27DC-0531-5091-28D7-CF8D95DFD129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07EF6E45-8F88-98A7-EE08-421B1F25427B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07EF6E45-8F88-98A7-EE08-421B1F25427B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07EF6E45-8F88-98A7-EE08-421B1F25427B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07EF6E45-8F88-98A7-EE08-421B1F25427B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E8B40D8-E65C-816F-9E5C-47C2D787272C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E8B40D8-E65C-816F-9E5C-47C2D787272C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E8B40D8-E65C-816F-9E5C-47C2D787272C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E8B40D8-E65C-816F-9E5C-47C2D787272C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F24123D7-4FEC-C954-F376-52CA775F6B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F24123D7-4FEC-C954-F376-52CA775F6B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F24123D7-4FEC-C954-F376-52CA775F6B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F24123D7-4FEC-C954-F376-52CA775F6B4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,7 +66,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5DFCCF44-50F2-423E-8A38-6BF14780B983} = {BFC10E81-FB4A-4646-910B-FBF76DBB9B3C}
 		{7D1C1DDB-4061-4293-8DA3-991C91BAA1C1} = {68BDD6A5-BF7A-4F95-B1EB-BE0B58C4941A}
-		{C8398D3C-677A-4789-9C1A-5FBB3220B5D9} = {BFC10E81-FB4A-4646-910B-FBF76DBB9B3C}
+		{D30F27DC-0531-5091-28D7-CF8D95DFD129} = {804BEA73-A3BA-4ACA-9DC5-7BB428517B9C}
+		{07EF6E45-8F88-98A7-EE08-421B1F25427B} = {804BEA73-A3BA-4ACA-9DC5-7BB428517B9C}
+		{6E8B40D8-E65C-816F-9E5C-47C2D787272C} = {87F125D6-E545-455B-81F2-DD85589BD041}
+		{F24123D7-4FEC-C954-F376-52CA775F6B4F} = {87F125D6-E545-455B-81F2-DD85589BD041}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5C57A457-80FD-4B18-AE20-F6B69F02557B}

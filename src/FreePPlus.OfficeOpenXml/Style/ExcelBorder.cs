@@ -30,7 +30,7 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.Style;
 

@@ -32,7 +32,7 @@
 using System;
 using System.Globalization;
 using System.Xml;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.ConditionalFormatting;

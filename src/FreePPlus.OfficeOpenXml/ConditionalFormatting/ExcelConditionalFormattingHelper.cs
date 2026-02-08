@@ -33,7 +33,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.ConditionalFormatting;

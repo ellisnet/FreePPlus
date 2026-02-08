@@ -33,7 +33,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using OfficeOpenXml.Utils;
 

@@ -30,8 +30,8 @@
  * Jan Källman		Added		25-JAN-2010
  *******************************************************************************/
 
-using FreePPlus.Imaging;
-using FreePPlus.Imaging.Fonts;
+using CodeBrix.Imaging;
+using CodeBrix.Imaging.Fonts;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Drawing.Chart;
@@ -41,7 +41,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using Color = FreePPlus.Imaging.Color;
+using Color = CodeBrix.Imaging.Color;
 
 namespace FreePPlus.OfficeOpenXml.SampleApp;
 

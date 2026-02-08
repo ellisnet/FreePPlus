@@ -35,16 +35,19 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
-using FreePPlus.Imaging;
-using FreePPlus.Imaging.Formats.Bmp;
-using FreePPlus.Imaging.Formats.Gif;
-using FreePPlus.Imaging.Formats.Jpeg;
-using FreePPlus.Imaging.Formats.Png;
-using FreePPlus.Imaging.Formats.Tga;
+using CodeBrix.Imaging;
+using CodeBrix.Imaging.Formats.Bmp;
+using CodeBrix.Imaging.Formats.Gif;
+using CodeBrix.Imaging.Formats.Jpeg;
+using CodeBrix.Imaging.Formats.Pbm;
+using CodeBrix.Imaging.Formats.Png;
+using CodeBrix.Imaging.Formats.Tga;
+using CodeBrix.Imaging.Formats.Tiff;
+using CodeBrix.Imaging.Formats.Webp;
 using OfficeOpenXml.Compatibility;
 using OfficeOpenXml.Packaging;
 using OfficeOpenXml.Utils;
-using Formats = FreePPlus.Imaging.Formats;
+using Formats = CodeBrix.Imaging.Formats;
 
 namespace OfficeOpenXml.Drawing;
 
@@ -352,32 +355,43 @@ public sealed class ExcelPicture : ExcelDrawing
     {
         switch (extension.ToLower(CultureInfo.InvariantCulture))
         {
-            case ".bmp":
-                return "image/bmp";
-            case ".jpg":
-            case ".jpeg":
-                return "image/jpeg";
-            case ".gif":
-                return "image/gif";
-            case ".png":
-                return "image/png";
+            // ReSharper disable RedundantCaseLabel
+            case BmpFormat.FormatDefaultExtension:
+                return BmpFormat.FormatMimeType;
+
+            case GifFormat.FormatDefaultExtension:
+                return GifFormat.FormatMimeType;
+
+            case PngFormat.FormatDefaultExtension:
+                return PngFormat.FormatMimeType;
+
             case ".cgm":
                 return "image/cgm";
+
             case ".emf":
                 return "image/x-emf";
+
             case ".eps":
                 return "image/x-eps";
+
             case ".pcx":
                 return "image/x-pcx";
-            case ".tga":
-                return "image/x-tga";
-            case ".tif":
-            case ".tiff":
-                return "image/x-tiff";
+
+            case TgaFormat.FormatDefaultExtension:
+                return TgaFormat.FormatMimeType;
+
+            case TiffFormat.FormatDefaultExtension:
+            case TiffFormat.FormatAltDefaultExtension:
+                return TiffFormat.FormatMimeType;
+
             case ".wmf":
                 return "image/x-wmf";
+
+            case JpegFormat.FormatDefaultExtension:
+            case JpegFormat.FormatAltDefaultExtension:
             default:
-                return "image/jpeg";
+                return JpegFormat.FormatMimeType;
+            // ReSharper restore RedundantCaseLabel
         }
     }
 
@@ -417,17 +431,25 @@ public sealed class ExcelPicture : ExcelDrawing
     {
         switch (contentType.ToLower(CultureInfo.InvariantCulture))
         {
-            case "image/bmp":
+            case BmpFormat.FormatMimeType:
                 return BmpFormat.Instance;
-            case "image/jpeg":
+
+            case JpegFormat.FormatMimeType:
                 return JpegFormat.Instance;
-            case "image/gif":
+
+            case GifFormat.FormatMimeType:
                 return GifFormat.Instance;
-            case "image/png":
+
+            case PngFormat.FormatMimeType:
                 return PngFormat.Instance;
 
+            case PbmFormat.FormatMimeType:
+            case TgaFormat.FormatMimeType:
+            case TgaFormat.FormatAltMimeType:
+            case TiffFormat.FormatMimeType:
+            case TiffFormat.FormatAltMimeType:
+            case WebpFormat.FormatMimeType:
             case "image/x-emf":
-            case "image/x-tiff":
             case "image/x-wmf":
                 throw new NotSupportedException(
                     $"Image format '{contentType.ToLower(CultureInfo.InvariantCulture)}' cannot be processed by this application.");

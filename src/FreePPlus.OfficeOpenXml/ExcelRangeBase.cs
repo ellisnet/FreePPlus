@@ -44,7 +44,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using FreePPlus.Imaging.Fonts;
+using CodeBrix.Imaging.Fonts;
 using OfficeOpenXml.Compatibility;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.DataValidation;

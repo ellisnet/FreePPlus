@@ -33,7 +33,7 @@ using OfficeOpenXml.Style;
 using System;
 using System.IO;
 using System.Text;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 
 namespace FreePPlus.OfficeOpenXml.SampleApp;
 

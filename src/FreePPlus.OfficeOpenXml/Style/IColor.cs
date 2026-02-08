@@ -1,4 +1,4 @@
-﻿using FreePPlus.Imaging;
+﻿using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.Style;
 //<xsd:complexType name = "CT_Color" >

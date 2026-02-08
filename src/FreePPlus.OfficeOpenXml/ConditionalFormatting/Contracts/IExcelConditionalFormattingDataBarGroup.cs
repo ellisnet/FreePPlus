@@ -29,7 +29,7 @@
  * Eyal Seagull    Conditional Formatting Adaption    2012-04-03
  *******************************************************************************/
 
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.ConditionalFormatting.Contracts;
 

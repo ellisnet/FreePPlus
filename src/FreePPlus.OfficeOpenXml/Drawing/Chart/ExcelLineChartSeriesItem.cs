@@ -33,7 +33,7 @@
 using System;
 using System.Globalization;
 using System.Xml;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.Drawing.Chart;
 

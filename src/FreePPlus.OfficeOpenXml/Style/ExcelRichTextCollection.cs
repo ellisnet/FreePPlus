@@ -36,7 +36,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using FreePPlus.Imaging;
+using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.Style;
 

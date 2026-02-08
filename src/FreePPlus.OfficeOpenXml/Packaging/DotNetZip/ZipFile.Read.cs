@@ -546,7 +546,7 @@ internal partial class ZipFile
                 zf._locEndOfCDS = s.Position - 4;
 
                 var block = new byte[16];
-                s.Read(block, 0, block.Length);
+                s.ReadExactly(block, 0, block.Length);
 
                 zf._diskNumberWithCd = BitConverter.ToUInt16(block, 2);
 
@@ -604,7 +604,7 @@ internal partial class ZipFile
         // seek back to find the ZIP64 EoCD.
         // I think this might not work for .NET CF ?
         s.Seek(-40, SeekOrigin.Current);
-        s.Read(block, 0, 16);
+        s.ReadExactly(block, 0, 16);
 
         var offset64 = BitConverter.ToInt64(block, 8);
         zf._OffsetOfCentralDirectory = 0xFFFFFFFF;
@@ -618,11 +618,11 @@ internal partial class ZipFile
             throw new BadReadException(string.Format(
                 "  Bad signature (0x{0:X8}) looking for ZIP64 EoCD Record at position 0x{1:X8}", datum, s.Position));
 
-        s.Read(block, 0, 8);
+        s.ReadExactly(block, 0, 8);
         var Size = BitConverter.ToInt64(block, 0);
 
         block = new byte[Size];
-        s.Read(block, 0, block.Length);
+        s.ReadExactly(block, 0, block.Length);
 
         offset64 = BitConverter.ToInt64(block, 36);
         // change for workitem 8098
@@ -780,7 +780,7 @@ internal partial class ZipFile
             // 52 bytes
 
             block = new byte[8 + 44];
-            s.Read(block, 0, block.Length);
+            s.ReadExactly(block, 0, block.Length);
 
             var DataSize = BitConverter.ToInt64(block, 0); // == 44 + the variable length
 
@@ -798,7 +798,7 @@ internal partial class ZipFile
 
             // read the extended block
             block = new byte[DataSize - 44];
-            s.Read(block, 0, block.Length);
+            s.ReadExactly(block, 0, block.Length);
             // discard the result
 
             signature = SharedUtilities.ReadSignature(s);
@@ -806,7 +806,7 @@ internal partial class ZipFile
                 throw new ZipException("Inconsistent metadata in the ZIP64 Central Directory.");
 
             block = new byte[16];
-            s.Read(block, 0, block.Length);
+            s.ReadExactly(block, 0, block.Length);
             // discard the result
 
             signature = SharedUtilities.ReadSignature(s);
@@ -823,7 +823,7 @@ internal partial class ZipFile
 
         // read the End-of-Central-Directory-Record
         block = new byte[16];
-        zf.ReadStream.Read(block, 0, block.Length);
+        zf.ReadStream.ReadExactly(block, 0, block.Length);
 
         // off sz  data
         // -------------------------------------------------------
@@ -848,13 +848,13 @@ internal partial class ZipFile
     {
         // read the comment here
         var block = new byte[2];
-        zf.ReadStream.Read(block, 0, block.Length);
+        zf.ReadStream.ReadExactly(block, 0, block.Length);
 
         var commentLength = (short)(block[0] + block[1] * 256);
         if (commentLength > 0)
         {
             block = new byte[commentLength];
-            zf.ReadStream.Read(block, 0, block.Length);
+            zf.ReadStream.ReadExactly(block, 0, block.Length);
 
             // workitem 10392 - prefer ProvisionalAlternateEncoding,
             // first.  The fix for workitem 6513 tried to use UTF8
@@ -868,7 +868,6 @@ internal partial class ZipFile
         }
     }
 
-
     // private static bool BlocksAreEqual(byte[] a, byte[] b)
     // {
     //     if (a.Length != b.Length) return false;
@@ -878,8 +877,7 @@ internal partial class ZipFile
     //     }
     //     return true;
     // }
-
-
+    
     /// <summary>
     ///     Checks the given file to see if it appears to be a valid zip file.
     /// </summary>
@@ -896,7 +894,6 @@ internal partial class ZipFile
     {
         return IsZipFile(fileName, false);
     }
-
 
     /// <summary>
     ///     Checks a file to see if it is a valid zip file.
@@ -945,7 +942,6 @@ internal partial class ZipFile
 
         return result;
     }
-
 
     /// <summary>
     ///     Checks a stream to see if it contains a valid zip archive.

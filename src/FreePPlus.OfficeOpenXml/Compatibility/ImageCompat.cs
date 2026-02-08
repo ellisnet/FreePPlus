@@ -1,4 +1,4 @@
-﻿using FreePPlus.Imaging;
+﻿using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.Compatibility;
 

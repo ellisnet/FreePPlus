@@ -47,8 +47,8 @@
  * The author accepts no liability for any damage or loss of business that this product may cause.
  */
 
-using FreePPlus.Imaging;
-using FreePPlus.Imaging.Fonts;
+using CodeBrix.Imaging;
+using CodeBrix.Imaging.Fonts;
 using Microsoft.Data.SqlClient;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
