@@ -30,11 +30,6 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 
-using System;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Xml;
 using CodeBrix.Imaging;
 using CodeBrix.Imaging.Formats.Bmp;
 using CodeBrix.Imaging.Formats.Gif;
@@ -44,9 +39,15 @@ using CodeBrix.Imaging.Formats.Png;
 using CodeBrix.Imaging.Formats.Tga;
 using CodeBrix.Imaging.Formats.Tiff;
 using CodeBrix.Imaging.Formats.Webp;
+using CodeBrix.Imaging.PixelFormats;
 using OfficeOpenXml.Compatibility;
 using OfficeOpenXml.Packaging;
 using OfficeOpenXml.Utils;
+using System;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Xml;
 using Formats = CodeBrix.Imaging.Formats;
 
 namespace OfficeOpenXml.Drawing;
@@ -105,6 +106,15 @@ public sealed class ExcelPicture : ExcelDrawing
     internal ZipPackageRelationship HypRel { get; set; }
 
     internal new string Id => Name;
+
+    public static Image CreateImage(int width, int height)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
+
+        //New images default to JPEG format.
+        return new Image<Rgba32>(width, height, JpegFormat.Instance);
+    }
 
     /// <summary>
     ///     Fill

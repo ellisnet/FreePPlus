@@ -48,7 +48,7 @@ public sealed class ExcelDrawingFill : XmlHelper
 
     //ExcelShape _shp;                
     private readonly string _fillPath;
-    private readonly XmlNode _fillTypeNode;
+    private XmlNode _fillTypeNode;
     private XmlNode _fillNode;
 
     private eFillStyle _style;
@@ -84,7 +84,7 @@ public sealed class ExcelDrawingFill : XmlHelper
         {
             if (_fillTypeNode == null)
                 return eFillStyle.SolidFill;
-            _style = GetStyleEnum(_fillTypeNode.Name);
+            _style = GetStyleEnum(_fillTypeNode.LocalName);
             return _style;
         }
         set
@@ -141,6 +141,11 @@ public sealed class ExcelDrawingFill : XmlHelper
             {
                 throw new Exception("FillStyle must be set to SolidFill");
             }
+            else if (GetXmlNodeString(_fillPath + ColorPath) == "")
+            {
+                // Ensure a:srgbClr has its required @val attribute before adding child alpha element
+                Color = Color.FromArgb(79, 129, 189); //Set a Default color
+            }
 
             //CreateNode(_fillPath, false);
             SetXmlNodeString(_fillPath + alphaPath, ((100 - value) * 1000).ToString());
@@ -152,6 +157,7 @@ public sealed class ExcelDrawingFill : XmlHelper
         if (_fillTypeNode != null) TopNode.RemoveChild(_fillTypeNode);
         CreateNode(_fillPath + "/a:" + GetStyleText(value), false);
         _fillNode = TopNode.SelectSingleNode(_fillPath + "/a:" + GetStyleText(value), NameSpaceManager);
+        _fillTypeNode = _fillNode;
     }
 
     private eFillStyle GetStyleEnum(string name)

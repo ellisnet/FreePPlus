@@ -33,12 +33,6 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-27
  *******************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using System.Xml;
 using CodeBrix.Imaging.Formats.Jpeg;
 using Microsoft.Extensions.Configuration;
 using OfficeOpenXml.Compatibility;
@@ -46,6 +40,16 @@ using OfficeOpenXml.Encryption;
 using OfficeOpenXml.Packaging;
 using OfficeOpenXml.Utils;
 using OfficeOpenXml.Utils.CompundDocument;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
 
 #pragma warning disable IDE0059
 
@@ -1135,6 +1139,8 @@ public sealed class ExcelPackage : IDisposable
                 {
                     System.IO.File.WriteAllBytes(File.FullName, GetAsByteArray(false));
                 }
+
+                File.Refresh();
             }
         }
         catch (Exception ex)
@@ -1211,6 +1217,161 @@ public sealed class ExcelPackage : IDisposable
     {
         Encryption.Password = password;
         SaveAs(outputStream);
+    }
+
+    /// <summary>
+    ///     Saves all the components back into the package.
+    ///     This method recursively calls the Save method on all sub-components.
+    ///     We close the package after the save is done.
+    /// </summary>
+    public async Task SaveAsync()
+    {
+        try
+        {
+            if (_stream is MemoryStream && _stream.Length > 0)
+                //Close any open memorystream and "renew" then. This can occure if the package is saved twice. 
+                //The stream is left open on save to enable the user to read the stream-property.
+                //Non-memorystream streams will leave the closing to the user before saving a second time.
+                CloseStream();
+
+            Workbook.Save();
+            if (File == null)
+            {
+                if (Encryption.IsEncrypted)
+                {
+                    var ms = new MemoryStream();
+                    Package.Save(ms);
+                    var file = ms.ToArray();
+                    var eph = new EncryptedPackageHandler();
+                    var msEnc = eph.EncryptPackage(file, Encryption);
+                    CopyStream(msEnc, ref _stream);
+                }
+                else
+                {
+                    Package.Save(_stream);
+                }
+
+                await _stream.FlushAsync();
+                Package.Close();
+            }
+            else
+            {
+                if (System.IO.File.Exists(File.FullName))
+                    try
+                    {
+                        System.IO.File.Delete(File.FullName);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(string.Format("Error overwriting file {0}", File.FullName), ex);
+                    }
+
+                Package.Save(_stream);
+                Package.Close();
+                if (Stream is MemoryStream)
+                {
+                    await using var fi = new FileStream(File.FullName, FileMode.Create);
+                    //EncryptPackage
+                    if (Encryption.IsEncrypted)
+                    {
+                        var file = ((MemoryStream)Stream).ToArray();
+                        var eph = new EncryptedPackageHandler();
+                        var ms = eph.EncryptPackage(file, Encryption);
+
+                        await fi.WriteAsync(ms.ToArray(), 0, (int)ms.Length);
+                    }
+                    else
+                    {
+                        await fi.WriteAsync(((MemoryStream)Stream).ToArray(), 0, (int)Stream.Length);
+                    }
+                }
+                else
+                {
+                    await System.IO.File.WriteAllBytesAsync(File.FullName, GetAsByteArray(false));
+                }
+
+                File.Refresh();
+            }
+        }
+        catch (Exception ex)
+        {
+            if (File == null)
+                throw;
+            throw new InvalidOperationException(string.Format("Error saving file {0}", File.FullName), ex);
+        }
+    }
+
+    /// <summary>
+    ///     Saves all the components back into the package.
+    ///     This method recursively calls the Save method on all sub-components.
+    ///     The package is closed after it has ben saved
+    ///     d to encrypt the workbook with.
+    /// </summary>
+    /// <param name="password">This parameter overrides the Workbook.Encryption.Password.</param>
+    public async Task SaveAsync(string password)
+    {
+        Encryption.Password = password;
+        await SaveAsync();
+    }
+
+    /// <summary>
+    ///     Saves the workbook to a new file
+    ///     The package is closed after it has been saved
+    /// </summary>
+    /// <param name="file">The file location</param>
+    public async Task SaveAsAsync(FileInfo file)
+    {
+        File = file;
+        await SaveAsync();
+    }
+
+    /// <summary>
+    ///     Saves the workbook to a new file
+    ///     The package is closed after it has been saved
+    /// </summary>
+    /// <param name="file">The file</param>
+    /// <param name="password">
+    ///     The password to encrypt the workbook with.
+    ///     This parameter overrides the Encryption.Password.
+    /// </param>
+    public async Task SaveAsAsync(FileInfo file, string password)
+    {
+        File = file;
+        Encryption.Password = password;
+        await SaveAsync();
+    }
+
+    /// <summary>
+    ///     Copies the Package to the Outstream
+    ///     The package is closed after it has been saved
+    /// </summary>
+    /// <param name="outputStream">The stream to copy the package to</param>
+    public async Task SaveAsAsync(Stream outputStream)
+    {
+        File = null;
+        await SaveAsync();
+
+        if (outputStream != _stream)
+        {
+            if (_stream.CanSeek) _stream.Seek(0, SeekOrigin.Begin);
+            await _stream.CopyToAsync(outputStream);
+            await outputStream.FlushAsync();
+        }
+    }
+
+    /// <summary>
+    ///     Copies the Package to the Outstream
+    ///     The package is closed after it has been saved
+    /// </summary>
+    /// <param name="outputStream">The stream to copy the package to</param>
+    /// <param name="password">
+    ///     The password to encrypt the workbook with.
+    ///     This parameter overrides the Encryption.Password.
+    /// </param>
+    public async Task SaveAsAsync(Stream outputStream, string password)
+    {
+        Encryption.Password = password;
+        await SaveAsAsync(outputStream);
     }
 
     /// <summary>

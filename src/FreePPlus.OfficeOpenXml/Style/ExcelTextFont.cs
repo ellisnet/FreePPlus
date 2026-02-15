@@ -252,7 +252,7 @@ public class ExcelTextFont : XmlHelper
             case "":
                 return eUnderLineType.None;
             default:
-                return (eUnderLineType)Enum.Parse(typeof(eUnderLineType), text);
+                return (eUnderLineType)Enum.Parse(typeof(eUnderLineType), text, ignoreCase: true);
         }
     }
 

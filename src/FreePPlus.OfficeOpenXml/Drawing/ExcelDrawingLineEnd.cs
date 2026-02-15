@@ -207,9 +207,11 @@ namespace OfficeOpenXml.Drawing
             switch (text)
             {
                 case "sm":
+                    return eEndSize.Small;
                 case "med":
+                    return eEndSize.Medium;
                 case "lg":
-                    return (eEndSize)Enum.Parse(typeof(eEndSize), text, true);
+                    return eEndSize.Large;
                 default:
                     throw new Exception("Invalid Endsize");
             }
