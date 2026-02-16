@@ -2246,8 +2246,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
 
         if (inTQ) throw new ArgumentException(string.Format("Text delimiter is not closed in line : {0}", list.Count));
 
-        if (prevLineStart >= Format.EOL.Length && IsEOL(text, prevLineStart - Format.EOL.Length, Format.EOL))
-            //list.Add(text.Substring(prevLineStart- Format.EOL.Length, Format.EOL.Length));
+        if (prevLineStart >= text.Length)
             list.Add("");
         else
             list.Add(text[prevLineStart..]);

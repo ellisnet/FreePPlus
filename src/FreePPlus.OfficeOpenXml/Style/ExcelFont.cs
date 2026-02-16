@@ -166,22 +166,11 @@ public sealed class ExcelFont : StyleBase
     /// <param name="font"></param>
     public void SetFromFont(Font font)
     {
-        //Somehow getting the font "Arial Bold" from somewhere, but font doesn't seem to exist in Windows anymore.
-        //  Swapping out normal Arial
-        var isBold = font.IsBold;
-        var name = font.Name;
-
-        if ((!string.IsNullOrWhiteSpace(name)) && name.Trim().ToLowerInvariant() == "arial bold")
-        {
-            name = "Arial";
-            isBold = true;
-        }
-
-        Name = name;
+        Name = font.Family.Name;
         //Family=fnt.FontFamily.;
         Size = (int)font.Size;
         Strike = font.IsStrikeout;
-        Bold = isBold;
+        Bold = font.IsBold;
         UnderLine = font.IsUnderline;
         Italic = font.IsItalic;
     }

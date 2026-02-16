@@ -33,6 +33,7 @@
 using System;
 using System.Globalization;
 using System.Xml;
+using CodeBrix.Imaging.Fonts;
 
 namespace OfficeOpenXml.Style.XmlAccess;
 
@@ -179,18 +180,20 @@ public sealed class ExcelFontXml : StyleXmlHelper
     /// </summary>
     public string VerticalAlign { get; set; }
 
-#if ENABLE_SET_FROM_FONT
-        public void SetFromFont(System.Drawing.Font Font)
-        {
-            Name = Font.Name;
-            //Family=fnt.FontFamily.;
-            Size = (int)Font.Size;
-            Strike = Font.Strikeout;
-            Bold = Font.Bold;
-            UnderLine = Font.Underline;
-            Italic = Font.Italic;
-        }
-#endif
+    /// <summary>
+    ///     Set the font properties from a <see cref="Font" /> object.
+    /// </summary>
+    /// <param name="font">The font to copy properties from.</param>
+    public void SetFromFont(Font font)
+    {
+        Name = font.Family.Name;
+        //Family=fnt.FontFamily.;
+        Size = (int)font.Size;
+        Strike = font.IsStrikeout;
+        Bold = font.IsBold;
+        UnderLine = font.IsUnderline;
+        Italic = font.IsItalic;
+    }
 
     public static float GetFontHeight(string name, float size)
     {
