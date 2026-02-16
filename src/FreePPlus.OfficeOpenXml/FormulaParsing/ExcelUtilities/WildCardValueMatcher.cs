@@ -29,12 +29,15 @@
  * Mats Alm   		                Added       		        2013-03-01 (Prior file history on https://github.com/swmal/ExcelFormulaParser)
  *******************************************************************************/
 
+using System;
 using System.Text.RegularExpressions;
 
 namespace OfficeOpenXml.FormulaParsing.ExcelUtilities;
 
 public class WildCardValueMatcher : ValueMatcher
 {
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromSeconds(1);
+
     protected override int CompareStringToString(string s1, string s2)
     {
         if (s1.Contains("*") || s1.Contains("?"))
@@ -43,7 +46,14 @@ public class WildCardValueMatcher : ValueMatcher
             regexPattern = string.Format("^{0}$", regexPattern);
             regexPattern = regexPattern.Replace(@"\*", ".*");
             regexPattern = regexPattern.Replace(@"\?", ".");
-            if (Regex.IsMatch(s2, regexPattern)) return 0;
+            try
+            {
+                if (Regex.IsMatch(s2, regexPattern, RegexOptions.None, RegexTimeout)) return 0;
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                return IncompatibleOperands;
+            }
         }
 
         return base.CompareStringToString(s1, s2);

@@ -189,26 +189,29 @@ public class SecurityBaselineTests
     #region VULN-2: AddComment with null/empty Author (ClaimsPrincipal.Current.Identity.Name crash)
 
     [Fact]
-    public void AddComment_WithNullAuthor_ThrowsNullReferenceException()
+    public void AddComment_WithNullAuthor_DefaultsToAuthor()
     {
         using var pck = new ExcelPackage();
         var ws = pck.Workbook.Worksheets.Add("Sheet1");
 
-        // Current behavior: ClaimsPrincipal.Current is null in a test/server context,
-        // so accessing .Identity.Name throws NullReferenceException
-        Assert.ThrowsAny<NullReferenceException>(() =>
-            ws.Cells["A1"].AddComment("Test comment", null));
+        var comment = ws.Cells["A1"].AddComment("Test comment", null);
+
+        Assert.NotNull(comment);
+        Assert.Equal("Author", comment.Author);
+        Assert.Equal("Test comment", comment.Text);
     }
 
     [Fact]
-    public void AddComment_WithEmptyAuthor_ThrowsNullReferenceException()
+    public void AddComment_WithEmptyAuthor_DefaultsToAuthor()
     {
         using var pck = new ExcelPackage();
         var ws = pck.Workbook.Worksheets.Add("Sheet1");
 
-        // Empty string also triggers the ClaimsPrincipal path
-        Assert.ThrowsAny<NullReferenceException>(() =>
-            ws.Cells["A1"].AddComment("Test comment", ""));
+        var comment = ws.Cells["A1"].AddComment("Test comment", "");
+
+        Assert.NotNull(comment);
+        Assert.Equal("Author", comment.Author);
+        Assert.Equal("Test comment", comment.Text);
     }
 
     [Fact]
@@ -737,7 +740,7 @@ public class SecurityBaselineTests
 
         var nonExistent = new FileInfo(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv"));
 
-        Assert.ThrowsAny<Exception>(() =>
+        Assert.Throws<FileNotFoundException>(() =>
             ws.Cells["A1"].LoadFromText(nonExistent));
     }
 
@@ -749,7 +752,7 @@ public class SecurityBaselineTests
 
         var nonExistent = new FileInfo(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv"));
 
-        Assert.ThrowsAny<Exception>(() =>
+        Assert.Throws<FileNotFoundException>(() =>
             ws.Cells["A1"].LoadFromText(nonExistent, new ExcelTextFormat { Delimiter = ',' }));
     }
 
@@ -860,6 +863,50 @@ public class SecurityBaselineTests
         {
             File.Delete(tempFile);
         }
+    }
+
+    [Fact]
+    public void LoadFromText_FileInfo_NullFileInfo_ThrowsArgumentNullException()
+    {
+        using var pck = new ExcelPackage();
+        var ws = pck.Workbook.Worksheets.Add("CSV");
+
+        Assert.Throws<ArgumentNullException>(() =>
+            ws.Cells["A1"].LoadFromText((FileInfo)null));
+    }
+
+    [Fact]
+    public void LoadFromText_FileInfo_WithFormat_NullFileInfo_ThrowsArgumentNullException()
+    {
+        using var pck = new ExcelPackage();
+        var ws = pck.Workbook.Worksheets.Add("CSV");
+
+        Assert.Throws<ArgumentNullException>(() =>
+            ws.Cells["A1"].LoadFromText((FileInfo)null, new ExcelTextFormat { Delimiter = ',' }));
+    }
+
+    [Fact]
+    public void LoadFromText_FileInfo_WithTableStyle_NullFileInfo_ThrowsArgumentNullException()
+    {
+        using var pck = new ExcelPackage();
+        var ws = pck.Workbook.Worksheets.Add("CSV");
+
+        Assert.Throws<ArgumentNullException>(() =>
+            ws.Cells["A1"].LoadFromText((FileInfo)null, new ExcelTextFormat { Delimiter = ',' },
+                TableStyles.Light1, true));
+    }
+
+    [Fact]
+    public void LoadFromText_FileInfo_WithTableStyle_NonExistentFile_ThrowsFileNotFoundException()
+    {
+        using var pck = new ExcelPackage();
+        var ws = pck.Workbook.Worksheets.Add("CSV");
+
+        var nonExistent = new FileInfo(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv"));
+
+        Assert.Throws<FileNotFoundException>(() =>
+            ws.Cells["A1"].LoadFromText(nonExistent, new ExcelTextFormat { Delimiter = ',' },
+                TableStyles.Light1, true));
     }
 
     #endregion

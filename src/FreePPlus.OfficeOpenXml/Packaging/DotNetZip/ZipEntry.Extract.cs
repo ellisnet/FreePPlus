@@ -909,6 +909,12 @@ internal partial class ZipEntry
                 FileName));
     }
 
+    // Maximum allowed decompressed output size (1.5 GB) to guard against zip bomb attacks.
+    private const long MaxDecompressedSize = 1_610_612_736L;
+
+    // Maximum allowed compression ratio. A ratio exceeding this threshold indicates a potential zip bomb.
+    private const long MaxCompressionRatio = 100L;
+
     private int ExtractOne(Stream output)
     {
         var CrcResult = 0;
@@ -932,6 +938,20 @@ internal partial class ZipEntry
             var LeftToRead = _CompressionMethod_FromZipFile != (short)CompressionMethod.None
                 ? UncompressedSize
                 : _CompressedFileDataSize;
+
+            // Reject entries where the declared uncompressed size exceeds the safety limit.
+            if (LeftToRead > MaxDecompressedSize)
+                throw new InvalidDataException(
+                    string.Format("Entry '{0}' declares an uncompressed size of {1:N0} bytes, which exceeds the maximum allowed size of {2:N0} bytes.",
+                        FileName, LeftToRead, MaxDecompressedSize));
+
+            // Reject entries where the compression ratio is suspiciously high (potential zip bomb).
+            if (_CompressedFileDataSize > 0 &&
+                _CompressionMethod_FromZipFile != (short)CompressionMethod.None &&
+                UncompressedSize / _CompressedFileDataSize > MaxCompressionRatio)
+                throw new InvalidDataException(
+                    string.Format("Entry '{0}' has a compression ratio of {1}:1, which exceeds the maximum allowed ratio of {2}:1.",
+                        FileName, UncompressedSize / _CompressedFileDataSize, MaxCompressionRatio));
 
             // Get a stream that either decrypts or not.
             _inputDecryptorStream = GetExtractDecryptor(input);
@@ -958,6 +978,12 @@ internal partial class ZipEntry
                     output.Write(bytes, 0, n);
                     LeftToRead -= n;
                     bytesWritten += n;
+
+                    // Runtime guard: abort if actual bytes written exceed the safety limit.
+                    if (bytesWritten > MaxDecompressedSize)
+                        throw new InvalidDataException(
+                            string.Format("Entry '{0}' exceeded the maximum allowed decompressed size of {1:N0} bytes during extraction.",
+                                FileName, MaxDecompressedSize));
 
                     // fire the progress event, check for cancels
                     OnExtractProgress(bytesWritten, UncompressedSize);

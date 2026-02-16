@@ -30,8 +30,10 @@
  * Jan Källman		    License changed GPL-->LGPL 2011-12-27
  *******************************************************************************/
 
+using System;
+using System.Security.Cryptography;
+using System.Text;
 using System.Xml;
-using OfficeOpenXml.Encryption;
 
 namespace OfficeOpenXml;
 
@@ -43,6 +45,10 @@ namespace OfficeOpenXml;
 public class ExcelProtection : XmlHelper
 {
     private const string workbookPasswordPath = "d:workbookProtection/@workbookPassword";
+    private const string workbookAlgorithmNamePath = "d:workbookProtection/@workbookAlgorithmName";
+    private const string workbookHashValuePath = "d:workbookProtection/@workbookHashValue";
+    private const string workbookSaltValuePath = "d:workbookProtection/@workbookSaltValue";
+    private const string workbookSpinCountPath = "d:workbookProtection/@workbookSpinCount";
     private const string lockStructurePath = "d:workbookProtection/@lockStructure";
     private const string lockWindowsPath = "d:workbookProtection/@lockWindows";
     private const string lockRevisionPath = "d:workbookProtection/@lockRevision";
@@ -87,9 +93,44 @@ public class ExcelProtection : XmlHelper
     public void SetPassword(string Password)
     {
         if (string.IsNullOrEmpty(Password))
+        {
             DeleteNode(workbookPasswordPath);
+            DeleteNode(workbookAlgorithmNamePath);
+            DeleteNode(workbookHashValuePath);
+            DeleteNode(workbookSaltValuePath);
+            DeleteNode(workbookSpinCountPath);
+        }
         else
-            SetXmlNodeString(workbookPasswordPath,
-                ((int)EncryptedPackageHandler.CalculatePasswordHash(Password)).ToString("x"));
+        {
+            // Remove legacy password attribute if present
+            DeleteNode(workbookPasswordPath);
+
+            // Use SHA-512 with salt and spin count (OOXML standard)
+            var byPwd = Encoding.Unicode.GetBytes(Password);
+            var bySalt = new byte[16];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(bySalt);
+
+            const int spinCount = 100000;
+
+            using var hp = SHA512.Create();
+            var buffer = new byte[bySalt.Length + byPwd.Length];
+            Array.Copy(bySalt, buffer, bySalt.Length);
+            Array.Copy(byPwd, 0, buffer, bySalt.Length, byPwd.Length);
+            var hash = hp.ComputeHash(buffer);
+
+            for (var i = 0; i < spinCount; i++)
+            {
+                buffer = new byte[hash.Length + 4];
+                Array.Copy(hash, buffer, hash.Length);
+                Array.Copy(BitConverter.GetBytes(i), 0, buffer, hash.Length, 4);
+                hash = hp.ComputeHash(buffer);
+            }
+
+            SetXmlNodeString(workbookAlgorithmNamePath, "SHA-512");
+            SetXmlNodeString(workbookSaltValuePath, Convert.ToBase64String(bySalt));
+            SetXmlNodeString(workbookHashValuePath, Convert.ToBase64String(hash));
+            SetXmlNodeString(workbookSpinCountPath, spinCount.ToString());
+        }
     }
 }

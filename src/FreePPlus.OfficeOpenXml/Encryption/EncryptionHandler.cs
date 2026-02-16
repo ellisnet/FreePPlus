@@ -261,14 +261,23 @@ internal class EncryptedPackageHandler
         ei.DataIntegrity.EncryptedHmacValue = ms.ToArray();
     }
 
+    /// <summary>
+    ///     Returns the HMAC provider for the specified hash algorithm.
+    ///     MD5 and SHA-1 are retained solely for backward compatibility when reading
+    ///     existing encrypted documents. New documents always use SHA-512.
+    /// </summary>
     private HMAC GetHmacProvider(EncryptionInfoAgile.EncryptionKeyData ei, byte[] salt)
     {
         switch (ei.HashAlgorithm)
         {
+#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms
+#pragma warning disable CA5351 // Do Not Use Broken Cryptographic Algorithms
             case eHashAlogorithm.MD5:
                 return new HMACMD5(salt);
             case eHashAlogorithm.SHA1:
                 return new HMACSHA1(salt);
+#pragma warning restore CA5351
+#pragma warning restore CA5350
             case eHashAlogorithm.SHA256:
                 return new HMACSHA256(salt);
             case eHashAlogorithm.SHA384:
@@ -358,7 +367,9 @@ internal class EncryptedPackageHandler
 
         //AES = 32 Bits
         encryptionInfo.Verifier.VerifierHashSize = 0x20;
+#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms — SHA-1 is required by OOXML binary encryption spec
         var sha = SHA1.Create();
+#pragma warning restore CA5350
         var verifierHash = sha.ComputeHash(verifier);
 
         encryptionInfo.Verifier.EncryptedVerifierHash = EncryptData(key, verifierHash, false);
@@ -498,16 +509,25 @@ internal class EncryptedPackageHandler
         return null;
     }
 
+    /// <summary>
+    ///     Returns the hash algorithm provider for the specified hash algorithm.
+    ///     MD5 and SHA-1 are retained solely for backward compatibility when reading
+    ///     existing encrypted documents. New documents always use SHA-512.
+    /// </summary>
     private HashAlgorithm GetHashProvider(EncryptionInfoAgile.EncryptionKeyData encr)
     {
         switch (encr.HashAlgorithm)
         {
+#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms
+#pragma warning disable CA5351 // Do Not Use Broken Cryptographic Algorithms
             case eHashAlogorithm.MD5:
                 return MD5.Create();
             //case eHashAlogorithm.RIPEMD160:
             //    return new RIPEMD160Managed();                    
             case eHashAlogorithm.SHA1:
                 return SHA1.Create();
+#pragma warning restore CA5351
+#pragma warning restore CA5350
             case eHashAlogorithm.SHA256:
                 return SHA256.Create();
             case eHashAlogorithm.SHA384:
@@ -602,7 +622,9 @@ internal class EncryptedPackageHandler
         cryptoStream.ReadExactly(decryptedVerifierHash, 0, 16);
 
         //Get the hash for the decrypted verifier
+#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms — SHA-1 is required by OOXML binary encryption spec
         var sha = SHA1.Create();
+#pragma warning restore CA5350
         var hash = sha.ComputeHash(decryptedVerifier);
 
         //Equal?
@@ -705,7 +727,9 @@ internal class EncryptedPackageHandler
 
     /// <summary>
     ///     Create the hash.
-    ///     This method is written with the help of Lyquidity library, many thanks for this nice sample
+    ///     This method is written with the help of Lyquidity library, many thanks for this nice sample.
+    ///     SHA-1 is required by the OOXML binary encryption specification (ECMA-376)
+    ///     and cannot be replaced without breaking compatibility with existing files.
     /// </summary>
     /// <param name="password">The password</param>
     /// <param name="encryptionInfo">The encryption info extracted from the ENCRYPTIOINFO stream inside the OLE document</param>
@@ -717,10 +741,12 @@ internal class EncryptedPackageHandler
         try
         {
             HashAlgorithm hashProvider;
+#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms — SHA-1 is required by OOXML binary encryption spec
             if (encryptionInfo.Header.AlgIDHash == AlgorithmHashID.SHA1 ||
                 (encryptionInfo.Header.AlgIDHash == AlgorithmHashID.App &&
                  (encryptionInfo.Flags & Flags.fExternal) == 0))
                 hashProvider = SHA1.Create();
+#pragma warning restore CA5350
             else if (encryptionInfo.Header.KeySize > 0 && encryptionInfo.Header.KeySize < 80)
                 throw new NotSupportedException(
                     "RC4 Hash provider is not supported. Must be SHA1(AlgIDHash == 0x8004)");
@@ -853,25 +879,6 @@ internal class EncryptedPackageHandler
         Array.Copy(salt, inputBuf, salt.Length);
         Array.Copy(passwordBuf, 0, inputBuf, salt.Length, passwordBuf.Length);
         return inputBuf;
-    }
-
-    internal static ushort CalculatePasswordHash(string Password)
-    {
-        //Calculate the hash
-        //Thanks to Kohei Yoshida for the sample http://kohei.us/2008/01/18/excel-sheet-protection-password-hash/
-        ushort hash = 0;
-        for (var i = Password.Length - 1; i >= 0; i--)
-        {
-            hash ^= Password[i];
-            hash = (ushort)((ushort)((hash >> 14) & 0x01)
-                            |
-                            (ushort)((hash << 1) & 0x7FFF)); //Shift 1 to the left. Overflowing bit 15 goes into bit 0
-        }
-
-        hash ^= 0x8000 | ('N' << 8) | 'K'; //Xor NK with high bit set(0xCE4B)
-        hash ^= (ushort)Password.Length;
-
-        return hash;
     }
 
     #region Dataspaces Stream Methods

@@ -40,7 +40,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -1406,12 +1405,16 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
                     "<d:si xmlns:d=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" >" + v + "</d:si>",
                     Encoding.UTF8);
             else
-                xml.LoadXml("<d:si xmlns:d=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" ><d:r><d:t>" +
-                            ConvertUtil.ExcelEscapeString(v.ToString()) + "</d:t></d:r></d:si>");
+                XmlHelper.LoadXmlSafe(xml,
+                    "<d:si xmlns:d=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" ><d:r><d:t>" +
+                    ConvertUtil.ExcelEscapeString(v.ToString()) + "</d:t></d:r></d:si>",
+                    Encoding.UTF8);
         }
         else
         {
-            xml.LoadXml("<d:si xmlns:d=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" />");
+            XmlHelper.LoadXmlSafe(xml,
+                "<d:si xmlns:d=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" />",
+                Encoding.UTF8);
         }
 
         var rtc = new ExcelRichTextCollection(_worksheet.NameSpaceManager,
@@ -2286,8 +2289,12 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     /// </summary>
     /// <param name="TextFile">The Textfile</param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException"><paramref name="TextFile" /> is <c>null</c>.</exception>
+    /// <exception cref="FileNotFoundException">The file specified by <paramref name="TextFile" /> does not exist.</exception>
     public ExcelRangeBase LoadFromText(FileInfo TextFile)
     {
+        if (TextFile is null) throw new ArgumentNullException(nameof(TextFile));
+        if (!TextFile.Exists) throw new FileNotFoundException("The specified text file was not found.", TextFile.FullName);
         return LoadFromText(File.ReadAllText(TextFile.FullName, Encoding.ASCII));
     }
 
@@ -2297,8 +2304,12 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     /// <param name="TextFile">The Textfile</param>
     /// <param name="Format">Information how to load the text</param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException"><paramref name="TextFile" /> is <c>null</c>.</exception>
+    /// <exception cref="FileNotFoundException">The file specified by <paramref name="TextFile" /> does not exist.</exception>
     public ExcelRangeBase LoadFromText(FileInfo TextFile, ExcelTextFormat Format)
     {
+        if (TextFile is null) throw new ArgumentNullException(nameof(TextFile));
+        if (!TextFile.Exists) throw new FileNotFoundException("The specified text file was not found.", TextFile.FullName);
         return LoadFromText(File.ReadAllText(TextFile.FullName, Format.Encoding), Format);
     }
 
@@ -2310,9 +2321,13 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     /// <param name="TableStyle">Create a table with this style</param>
     /// <param name="FirstRowIsHeader">Use the first row as header</param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException"><paramref name="TextFile" /> is <c>null</c>.</exception>
+    /// <exception cref="FileNotFoundException">The file specified by <paramref name="TextFile" /> does not exist.</exception>
     public ExcelRangeBase LoadFromText(FileInfo TextFile, ExcelTextFormat Format, TableStyles TableStyle,
         bool FirstRowIsHeader)
     {
+        if (TextFile is null) throw new ArgumentNullException(nameof(TextFile));
+        if (!TextFile.Exists) throw new FileNotFoundException("The specified text file was not found.", TextFile.FullName);
         return LoadFromText(File.ReadAllText(TextFile.FullName, Format.Encoding), Format, TableStyle, FirstRowIsHeader);
     }
 
@@ -2404,7 +2419,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     /// <returns>A reference comment of the top left cell</returns>
     public ExcelComment AddComment(string Text, string Author)
     {
-        if (string.IsNullOrEmpty(Author)) Author = ClaimsPrincipal.Current.Identity.Name;
+        if (string.IsNullOrEmpty(Author)) Author = "Author";
         //Check if any comments exists in the range and throw an exception
         _changePropMethod(this, _setExistsCommentDelegate, null);
         //Create the comments
