@@ -9,6 +9,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,7 +22,18 @@ namespace FreePPlus.OfficeOpenXml.Tests;
 public class IssueBasedTests
 {
 #if SAVE_TEMP_FILES
-    public const string TempFolder = @"C:\Temp";
+
+#if TESTING_ON_LINUX
+    public const string TempFolderPath = @"/home/jeremy/Temp";
+#elif TESTING_ON_MACOS
+    public const string TempFolderPath = @"/Users/jeremy/Temp";
+#elif TESTING_ON_LINUX_ORANGEPI
+    public const string TempFolderPath = "/home/orangepi/Temp";
+#else
+    //TESTING_ON_WINDOWS
+    public const string TempFolder = @"C:\Temp"; 
+#endif
+
 #endif
 
     #region Number Format and Text Tests
@@ -55,6 +67,13 @@ public class IssueBasedTests
     {
         using var package = new ExcelPackage();
         var ws = package.Workbook.Worksheets.Add("Test");
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            // The AutoFitColumns() method called below uses the resolved style font;
+            //   the default is Calibri, which is often missing on non-Windows hosts.
+            ws.Cells.Style.Font.Name = "DejaVu Sans";  //DejaVu Sans should be "safe" on Linux
+        }
+
         ws.Cells.AutoFitColumns();
         ws.Cells["A1"].Style.Numberformat.Format = "0";
         ws.Cells.AutoFitColumns();
@@ -658,6 +677,13 @@ public class IssueBasedTests
         var ws = p.Workbook.Worksheets.Add("AutoFit");
         ws.Cells[1, 1].Value = new string('a', 50000);
 
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            // The AutoFitColumns() method called below uses the resolved style font;
+            //   the default is Calibri, which is often missing on non-Windows hosts.
+            ws.Cells.Style.Font.Name = "DejaVu Sans";  //DejaVu Sans should be "safe" on Linux
+        }
+        
         // Should not hang or throw
         ws.Cells[1, 1].AutoFitColumns();
     }
