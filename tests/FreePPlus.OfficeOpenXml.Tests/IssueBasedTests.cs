@@ -73,6 +73,11 @@ public class IssueBasedTests
             //   the default is Calibri, which is often missing on non-Windows hosts.
             ws.Cells.Style.Font.Name = "DejaVu Sans";  //DejaVu Sans should be "safe" on Linux
         }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            //Use Helvetica on macOS.
+            ws.Cells.Style.Font.Name = "Helvetica";
+        }
 
         ws.Cells.AutoFitColumns();
         ws.Cells["A1"].Style.Numberformat.Format = "0";
@@ -682,6 +687,11 @@ public class IssueBasedTests
             // The AutoFitColumns() method called below uses the resolved style font;
             //   the default is Calibri, which is often missing on non-Windows hosts.
             ws.Cells.Style.Font.Name = "DejaVu Sans";  //DejaVu Sans should be "safe" on Linux
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            //Use Helvetica on macOS.
+            ws.Cells.Style.Font.Name = "Helvetica";
         }
         
         // Should not hang or throw
