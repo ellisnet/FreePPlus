@@ -24,11 +24,11 @@ public class IssueBasedTests
 #if SAVE_TEMP_FILES
 
 #if TESTING_ON_LINUX
-    public const string TempFolderPath = @"/home/jeremy/Temp";
+    public const string TempFolder = @"/home/jeremy/Temp";
 #elif TESTING_ON_MACOS
-    public const string TempFolderPath = @"/Users/jeremy/Temp";
+    public const string TempFolder = @"/Users/jeremy/Temp";
 #elif TESTING_ON_LINUX_ORANGEPI
-    public const string TempFolderPath = "/home/orangepi/Temp";
+    public const string TempFolder = "/home/orangepi/Temp";
 #else
     //TESTING_ON_WINDOWS
     public const string TempFolder = @"C:\Temp"; 
