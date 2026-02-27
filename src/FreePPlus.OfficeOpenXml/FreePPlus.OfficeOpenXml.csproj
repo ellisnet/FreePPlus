@@ -3,17 +3,37 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>OfficeOpenXml</RootNamespace>
+
+    <!-- NuGet package properties -->
+    <PackageId>FreePPlus.LgplLicenseForever</PackageId>
+    <Version>1.0.49</Version>
+    <Authors>Jeremy Ellis</Authors>
+    <Product>FreePPlus</Product>
+    <Title>FreePPlus</Title>
+    <Description>Create advanced Excel spreadsheets using .NET, without the need of interop. FreePPlus is a .NET library that reads and writes Excel files using the Office Open XML format (xlsx).</Description>
+    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ellisnet/FreePPlus</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ellisnet/FreePPlus</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>icon-codebrix-128.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>Copyright (c) 2026 Jeremy Ellis and contributors</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>Excel;xlsx;spreadsheet;Office;OpenXML;FreePPlus;CodeBrix</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.2" />
+    <None Include="icon-codebrix-128.png" Pack="true" PackagePath="" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CodeBrix.Imaging-private\src\CodeBrix.Imaging\CodeBrix.Imaging.csproj" />
+    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.48" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.3" />
   </ItemGroup>
 
 </Project>

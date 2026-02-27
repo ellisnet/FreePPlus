@@ -19,7 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageReference Include="SilverAssertions.ApacheLicenseForever" Version="1.0.48" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SilverAssertions-private\src\SilverAssertions\SilverAssertions.csproj" />
     <ProjectReference Include="..\..\src\FreePPlus.OfficeOpenXml\FreePPlus.OfficeOpenXml.csproj" />
   </ItemGroup>
 
