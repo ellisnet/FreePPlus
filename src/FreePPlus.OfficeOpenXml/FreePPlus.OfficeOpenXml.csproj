@@ -24,12 +24,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="icon-codebrix-128.png" Pack="true" PackagePath="" />
+    <None Include="..\..\icon-codebrix-128.png" Pack="true" PackagePath="" />
     <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.48" />
+    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.49" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
