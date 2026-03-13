@@ -1,4 +1,9 @@
 # Copilot Instructions
 
-## Project Guidelines
-- The FreePPlus.Imaging project has been refactored away and removed from the solution. All imaging functionality is now provided by the CodeBrix.Imaging library. Do not look for or reference FreePPlus.Imaging.
+This project's complete documentation for AI coding agents — including API
+reference, usage examples, installation instructions, common pitfalls, and
+architectural guidance — is located at:
+
+📄 **[../AGENT-README.txt](../AGENT-README.txt)**
+
+Please read that file for all project context needed to work with this codebase.
