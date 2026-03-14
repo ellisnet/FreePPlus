@@ -6,7 +6,7 @@
 
     <!-- NuGet package properties -->
     <PackageId>FreePPlus.LgplLicenseForever</PackageId>
-    <Version>1.0.71</Version>
+    <Version>1.0.72</Version>
     <Authors>Jeremy Ellis</Authors>
     <Product>FreePPlus</Product>
     <Title>FreePPlus</Title>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.49" />
+    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.72" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
