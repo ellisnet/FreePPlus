@@ -32,6 +32,11 @@ public class ExcelFontTests
         Assert.Skip("No common system font is available on this platform.");
         return null!; // unreachable
     }
+
+    private const string FontInstallHint =
+        "On Linux, install the DejaVu font family (e.g. 'sudo apt install fonts-dejavu') "
+        + "to ensure italic and bold variants are available.";
+
     #region ExcelFont Property Tests
 
     [Fact]
@@ -286,7 +291,8 @@ public class ExcelFontTests
         Assert.Equal(fontName, ws.Cells["A1"].Style.Font.Name);
         Assert.Equal(10, ws.Cells["A1"].Style.Font.Size);
         Assert.False(ws.Cells["A1"].Style.Font.Bold);
-        Assert.True(ws.Cells["A1"].Style.Font.Italic);
+        Assert.True(ws.Cells["A1"].Style.Font.Italic,
+            $"Italic was not applied for font '{fontName}'. {FontInstallHint}");
     }
 
     [Fact]
@@ -301,8 +307,10 @@ public class ExcelFontTests
 
         Assert.Equal(fontName, ws.Cells["A1"].Style.Font.Name);
         Assert.Equal(18, ws.Cells["A1"].Style.Font.Size);
-        Assert.True(ws.Cells["A1"].Style.Font.Bold);
-        Assert.True(ws.Cells["A1"].Style.Font.Italic);
+        Assert.True(ws.Cells["A1"].Style.Font.Bold,
+            $"Bold was not applied for font '{fontName}'. {FontInstallHint}");
+        Assert.True(ws.Cells["A1"].Style.Font.Italic,
+            $"Italic was not applied for font '{fontName}'. {FontInstallHint}");
     }
 
     #endregion
@@ -374,7 +382,8 @@ public class ExcelFontTests
         Assert.Equal(fontName, fontXml.Name);
         Assert.Equal(10, fontXml.Size);
         Assert.False(fontXml.Bold);
-        Assert.True(fontXml.Italic);
+        Assert.True(fontXml.Italic,
+            $"Italic was not applied for font '{fontName}'. {FontInstallHint}");
     }
 
     [Fact]
@@ -390,8 +399,10 @@ public class ExcelFontTests
 
         Assert.Equal(fontName, fontXml.Name);
         Assert.Equal(18, fontXml.Size);
-        Assert.True(fontXml.Bold);
-        Assert.True(fontXml.Italic);
+        Assert.True(fontXml.Bold,
+            $"Bold was not applied for font '{fontName}'. {FontInstallHint}");
+        Assert.True(fontXml.Italic,
+            $"Italic was not applied for font '{fontName}'. {FontInstallHint}");
     }
 
     [Fact]
@@ -531,8 +542,10 @@ public class ExcelFontTests
 
         Assert.Equal(fontName, cellFont.Name);
         Assert.Equal(20, cellFont.Size);
-        Assert.True(cellFont.Bold);
-        Assert.True(cellFont.Italic);
+        Assert.True(cellFont.Bold,
+            $"Bold was not applied for font '{fontName}'. {FontInstallHint}");
+        Assert.True(cellFont.Italic,
+            $"Italic was not applied for font '{fontName}'. {FontInstallHint}");
     }
 
     #endregion
