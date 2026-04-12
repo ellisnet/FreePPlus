@@ -16,8 +16,10 @@ is essentially identical. The namespaces are the SAME as EPPlus: "OfficeOpenXml"
 This means code written for EPPlus 4.x will work with FreePPlus with minimal
 changes (just swap the NuGet package).
 
-IMPORTANT: FreePPlus has ONE dependency beyond .NET: CodeBrix.Imaging (for image
-and font handling). This dependency is automatically pulled in via NuGet.
+IMPORTANT: FreePPlus has one third-party dependency: CodeBrix.Imaging (for
+image and font handling). It also depends on a few Microsoft.Extensions and
+System.Security.Cryptography packages. All dependencies are automatically
+pulled in via NuGet.
 
 Source Repository: https://github.com/ellisnet/FreePPlus
 License: LGPL v3 (GNU Lesser General Public License version 3)
@@ -27,14 +29,12 @@ License: LGPL v3 (GNU Lesser General Public License version 3)
 INSTALLATION
 ------------
 NuGet Package: FreePPlus.LgplLicenseForever
-Latest Version: 1.0.49 (as of Feb 2026)
-Package Size: ~469 KB
 Dependencies:
-  - CodeBrix.Imaging.ApacheLicenseForever (>= 1.0.48)
-  - Microsoft.Extensions.Configuration (>= 10.0.3)
-  - Microsoft.Extensions.Configuration.FileExtensions (>= 10.0.3)
-  - Microsoft.Extensions.Configuration.Json (>= 10.0.3)
-  - System.Security.Cryptography.Pkcs (>= 10.0.3)
+  - CodeBrix.Imaging.ApacheLicenseForever
+  - Microsoft.Extensions.Configuration
+  - Microsoft.Extensions.Configuration.FileExtensions
+  - Microsoft.Extensions.Configuration.Json
+  - System.Security.Cryptography.Pkcs
 
 Requirements: .NET 10.0 or higher
 
@@ -42,9 +42,9 @@ To add to a .NET 10+ project:
 
     dotnet add package FreePPlus.LgplLicenseForever
 
-Or in a .csproj file:
+Or in a .csproj file (NuGet will resolve the latest version):
 
-    <PackageReference Include="FreePPlus.LgplLicenseForever" Version="1.0.49" />
+    <PackageReference Include="FreePPlus.LgplLicenseForever" />
 
 IMPORTANT: The package name is "FreePPlus.LgplLicenseForever" (not just
 "FreePPlus"). Always use this full package name when installing.
@@ -416,7 +416,6 @@ Create a table from LoadFromCollection (as shown above), or manually:
 
     var table = ws.Tables.Add(ws.Cells["A1:D10"], "SalesTable");
     table.TableStyle = TableStyles.Medium6;
-    table.ShowTotal = true;
     table.ShowFilter = true;
 
 Access existing tables:
@@ -939,9 +938,19 @@ COMMON PITFALLS TO AVOID
    ArgumentException.
 
 9. DO NOT forget the LGPL v3 license implications. If you modify the
-   FreePPlus source code, you must make your modifications available under
-   LGPL. Using it as a NuGet package (unmodified) in proprietary software
-   is permitted under LGPL.
+    FreePPlus source code, you must make your modifications available under
+    LGPL. Using it as a NuGet package (unmodified) in proprietary software
+    is permitted under LGPL.
+
+10. DO NOT set table.ShowTotal = true on tables created via
+    ws.Tables.Add(). This causes Excel to report the file as corrupted
+    when opened. Use ShowFilter, TableStyle, and other table properties
+    instead.
+
+11. DO NOT assume system fonts (especially italic and bold variants) are
+    available on Linux. On Linux, you may need to install font packages
+    (e.g. 'sudo apt install fonts-dejavu') to ensure font families with
+    italic and bold variants are available for SetFromFont() operations.
 
 ================================================================================
 

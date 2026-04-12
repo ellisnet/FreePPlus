@@ -6,7 +6,7 @@
 
     <!-- NuGet package properties -->
     <PackageId>FreePPlus.LgplLicenseForever</PackageId>
-    <Version>1.0.73</Version>
+    <Version>1.0.100</Version>
     <Authors>Jeremy Ellis</Authors>
     <Product>FreePPlus</Product>
     <Title>FreePPlus</Title>
@@ -26,10 +26,12 @@
   <ItemGroup>
     <None Include="..\..\icon-codebrix-128.png" Pack="true" PackagePath="" />
     <None Include="..\..\README.md" Pack="true" PackagePath="" />
+    <None Include="..\..\AGENT-README.txt" Pack="true" PackagePath="" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.txt" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.73" />
+    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.100" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />

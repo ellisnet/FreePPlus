@@ -2,7 +2,8 @@
 Create advanced Excel spreadsheets using .NET, without the need of interop.
 
 FreePPlus is a .NET library that reads and writes Excel files using the Office Open XML format (xlsx). 
-FreePPlus has one dependency other than .NET - the CodeBrix.Imaging package for image and font handling.
+FreePPlus has one third-party dependency - the CodeBrix.Imaging package for image and font handling.
+It also depends on a few Microsoft.Extensions and System.Security.Cryptography packages.
 
 FreePPlus is provided as a .NET 10 library and associated `FreePPlus.LgplLicenseForever` NuGet package.
 FreePPlus supports applications and assemblies that target Microsoft .NET version 10.0 and later.
