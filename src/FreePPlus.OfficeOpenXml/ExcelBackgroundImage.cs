@@ -46,6 +46,7 @@ namespace OfficeOpenXml;
 /// </summary>
 public class ExcelBackgroundImage : XmlHelper
 {
+    // ReSharper disable once InconsistentNaming
     private const string BACKGROUNDPIC_PATH = "d:picture/@r:id";
     private readonly ExcelWorksheet _workSheet;
 
@@ -68,10 +69,10 @@ public class ExcelBackgroundImage : XmlHelper
     {
         get
         {
-            var relID = GetXmlNodeString(BACKGROUNDPIC_PATH);
-            if (!string.IsNullOrEmpty(relID))
+            var relId = GetXmlNodeString(BACKGROUNDPIC_PATH);
+            if (!string.IsNullOrEmpty(relId))
             {
-                var rel = _workSheet.Part.GetRelationship(relID);
+                var rel = _workSheet.Part.GetRelationship(relId);
                 var imagePart = _workSheet.Part.Package.GetPart(UriHelper.ResolvePartUri(rel.SourceUri, rel.TargetUri));
                 return Image.Load(imagePart.GetStream());
             }
@@ -100,59 +101,64 @@ public class ExcelBackgroundImage : XmlHelper
     ///     Set the picture from an image file.
     ///     The image file will be saved as a blob, so make sure Excel supports the image format.
     /// </summary>
-    /// <param name="PictureFile">The image file.</param>
-    public void SetFromFile(FileInfo PictureFile)
+    /// <param name="pictureFile">The image file.</param>
+    public void SetFromFile(FileInfo pictureFile)
     {
         DeletePrevImage();
 
-        Image img;
         byte[] fileBytes;
         try
         {
-            fileBytes = File.ReadAllBytes(PictureFile.FullName);
-            img = Image.Load(PictureFile.FullName);
+            fileBytes = File.ReadAllBytes(pictureFile.FullName);
+            // Validate image format without full pixel decode
+            if (Image.Identify(new MemoryStream(fileBytes)) == null)
+                throw new InvalidDataException("File is not a supported image-file or is corrupt");
+        }
+        catch (InvalidDataException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             throw new InvalidDataException("File is not a supported image-file or is corrupt", ex);
         }
 
-        var contentType = ExcelPicture.GetContentType(PictureFile.Extension);
-        var imageURI = GetNewUri(_workSheet._package.Package,
-            "/xl/media/" + PictureFile.Name[..^PictureFile.Extension.Length] + "{0}" + PictureFile.Extension);
+        var contentType = ExcelPicture.GetContentType(pictureFile.Extension);
+        var imageUri = GetNewUri(_workSheet._package.Package,
+            "/xl/media/" + pictureFile.Name[..^pictureFile.Extension.Length] + "{0}" + pictureFile.Extension);
 
-        var ii = _workSheet.Workbook._package.AddImage(fileBytes, imageURI, contentType);
+        var ii = _workSheet.Workbook._package.AddImage(fileBytes, imageUri, contentType);
 
 
-        if (_workSheet.Part.Package.PartExists(imageURI) &&
+        if (_workSheet.Part.Package.PartExists(imageUri) &&
             ii.RefCount == 1) //The file exists with another content, overwrite it.
             //Remove the part if it exists
-            _workSheet.Part.Package.DeletePart(imageURI);
+            _workSheet.Part.Package.DeletePart(imageUri);
 
-        var imagePart = _workSheet.Part.Package.CreatePart(imageURI, contentType, CompressionLevel.None);
+        var imagePart = _workSheet.Part.Package.CreatePart(imageUri, contentType, CompressionLevel.None);
         //Save the picture to package.
 
         var strm = imagePart.GetStream(FileMode.Create, FileAccess.Write);
         strm.Write(fileBytes, 0, fileBytes.Length);
 
-        var rel = _workSheet.Part.CreateRelationship(imageURI, TargetMode.Internal,
+        var rel = _workSheet.Part.CreateRelationship(imageUri, TargetMode.Internal,
             ExcelPackage.SchemaRelationships + "/image");
         SetXmlNodeString(BACKGROUNDPIC_PATH, rel.Id);
     }
 
     private void DeletePrevImage()
     {
-        var relID = GetXmlNodeString(BACKGROUNDPIC_PATH);
-        if (relID != "")
+        var relId = GetXmlNodeString(BACKGROUNDPIC_PATH);
+        if (relId != "")
         {
             var img = ImageCompat.GetImageAsByteArray(Image);
             var ii = _workSheet.Workbook._package.GetImageInfo(img);
 
             //Delete the relation
-            _workSheet.Part.DeleteRelationship(relID);
+            _workSheet.Part.DeleteRelationship(relId);
 
             //Delete the image if there are no other references.
-            if (ii != null && ii.RefCount == 1)
+            if (ii is { RefCount: 1 })
                 if (_workSheet.Part.Package.PartExists(ii.Uri))
                     _workSheet.Part.Package.DeletePart(ii.Uri);
         }

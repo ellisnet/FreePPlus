@@ -31,15 +31,15 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-27
  * *******************************************************************************/
 
-using System;
-using System.IO;
-using System.Xml;
 using CodeBrix.Imaging;
 using OfficeOpenXml.Compatibility;
 using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Drawing.Vml;
 using OfficeOpenXml.Packaging;
 using OfficeOpenXml.Utils;
+using System;
+using System.IO;
+using System.Xml;
 
 namespace OfficeOpenXml;
 
@@ -89,12 +89,12 @@ public class ExcelHeaderFooterText
     /// </summary>
     public string RightAlignedText;
 
-    internal ExcelHeaderFooterText(XmlNode TextNode, ExcelWorksheet ws, string hf)
+    internal ExcelHeaderFooterText(XmlNode textNode, ExcelWorksheet ws, string hf)
     {
         _ws = ws;
         _hf = hf;
-        if (TextNode == null || string.IsNullOrEmpty(TextNode.InnerText)) return;
-        var text = TextNode.InnerText;
+        if (textNode == null || string.IsNullOrEmpty(textNode.InnerText)) return;
+        var text = textNode.InnerText;
         var code = text[..2];
         var startPos = 2;
         for (var pos = startPos; pos < text.Length - 2; pos++)
@@ -131,66 +131,69 @@ public class ExcelHeaderFooterText
     /// <summary>
     ///     Inserts a picture at the end of the text in the header or footer
     /// </summary>
-    /// <param name="Picture">The image object containing the Picture</param>
-    /// <param name="Alignment">Alignment. The image object will be inserted at the end of the Text.</param>
-    public ExcelVmlDrawingPicture InsertPicture(Image Picture, PictureAlignment Alignment)
+    /// <param name="picture">The image object containing the Picture</param>
+    /// <param name="alignment">Alignment. The image object will be inserted at the end of the Text.</param>
+    public ExcelVmlDrawingPicture InsertPicture(Image picture, PictureAlignment alignment)
     {
-        var id = ValidateImage(Alignment);
+        var id = ValidateImage(alignment);
 
         //Add the image
-        var img = ImageCompat.GetImageAsByteArray(Picture);
+        var img = ImageCompat.GetImageAsByteArray(picture);
 
         var ii = _ws.Workbook._package.AddImage(img);
 
-        return AddImage(Picture, id, ii);
+        return AddImage(picture, id, ii);
     }
 
     /// <summary>
     ///     Inserts a picture at the end of the text in the header or footer
     /// </summary>
-    /// <param name="PictureFile">The image object containing the Picture</param>
-    /// <param name="Alignment">Alignment. The image object will be inserted at the end of the Text.</param>
-    public ExcelVmlDrawingPicture InsertPicture(FileInfo PictureFile, PictureAlignment Alignment)
+    /// <param name="pictureFile">The image object containing the Picture</param>
+    /// <param name="alignment">Alignment. The image object will be inserted at the end of the Text.</param>
+    public ExcelVmlDrawingPicture InsertPicture(FileInfo pictureFile, PictureAlignment alignment)
     {
-        var id = ValidateImage(Alignment);
+        var id = ValidateImage(alignment);
 
-        Image Picture;
+        Image picture;
+        byte[] imageBytes;
         try
         {
-            if (!PictureFile.Exists)
-                throw new FileNotFoundException(string.Format("{0} is missing", PictureFile.FullName));
-            Picture = Image.Load(PictureFile.FullName);
+            if (!pictureFile.Exists)
+                throw new FileNotFoundException(string.Format("{0} is missing", pictureFile.FullName));
+
+            // Read file bytes once — avoids a full decode+re-encode roundtrip
+            imageBytes = File.ReadAllBytes(pictureFile.FullName);
+            picture = Image.Load(new MemoryStream(imageBytes));
         }
         catch (Exception ex)
         {
             throw new InvalidDataException("File is not a supported image-file or is corrupt", ex);
         }
 
-        var contentType = ExcelPicture.GetContentType(PictureFile.Extension);
+        var contentType = ExcelPicture.GetContentType(pictureFile.Extension);
         var uriPic = XmlHelper.GetNewUri(_ws._package.Package,
-            "/xl/media/" + PictureFile.Name[..^PictureFile.Extension.Length] + "{0}" + PictureFile.Extension);
-        var imgBytes = ImageCompat.GetImageAsByteArray(Picture);
-        var ii = _ws.Workbook._package.AddImage(imgBytes, uriPic, contentType);
+            "/xl/media/" + pictureFile.Name[..^pictureFile.Extension.Length] + "{0}" + pictureFile.Extension);
+        var ii = _ws.Workbook._package.AddImage(imageBytes, uriPic, contentType);
 
-        return AddImage(Picture, id, ii);
+        return AddImage(picture, id, ii);
     }
 
-    private ExcelVmlDrawingPicture AddImage(Image Picture, string id, ExcelPackage.ImageInfo ii)
+    private ExcelVmlDrawingPicture AddImage(Image picture, string id, ExcelPackage.ImageInfo ii)
     {
-        double width = Picture.Width * 72 / Picture.HorizontalResolution, //Pixel --> Points
-            height = Picture.Height * 72 / Picture.VerticalResolution; //Pixel --> Points
+        double width = picture.Width * 72 / picture.HorizontalResolution, //Pixel --> Points
+            height = picture.Height * 72 / picture.VerticalResolution; //Pixel --> Points
         //Add VML-drawing            
         return _ws.HeaderFooter.Pictures.Add(id, ii.Uri, "", width, height);
     }
 
-    private string ValidateImage(PictureAlignment Alignment)
+    private string ValidateImage(PictureAlignment alignment)
     {
-        var id = string.Concat(Alignment.ToString()[0], _hf);
+        var id = string.Concat(alignment.ToString()[0], _hf);
         foreach (ExcelVmlDrawingPicture image in _ws.HeaderFooter.Pictures)
             if (image.Id == id)
                 throw new InvalidOperationException("A picture already exists in this section");
         //Add the image placeholder to the end of the text
-        switch (Alignment)
+        switch (alignment)
         {
             case PictureAlignment.Left:
                 LeftAlignedText += ExcelHeaderFooter.Image;
@@ -298,6 +301,7 @@ public sealed class ExcelHeaderFooter : XmlHelper
 
     #region ExcelHeaderFooter Private Properties
 
+    // ReSharper disable InconsistentNaming
     internal ExcelHeaderFooterText _oddHeader;
     internal ExcelHeaderFooterText _oddFooter;
     internal ExcelHeaderFooterText _evenHeader;
@@ -305,65 +309,66 @@ public sealed class ExcelHeaderFooter : XmlHelper
     internal ExcelHeaderFooterText _firstHeader;
     internal ExcelHeaderFooterText _firstFooter;
     private readonly ExcelWorksheet _ws;
+    // ReSharper restore InconsistentNaming
 
     #endregion
 
     #region alignWithMargins
 
-    private const string alignWithMarginsPath = "@alignWithMargins";
+    private const string AlignWithMarginsPath = "@alignWithMargins";
 
     /// <summary>
     ///     Gets/sets the alignWithMargins attribute
     /// </summary>
     public bool AlignWithMargins
     {
-        get => GetXmlNodeBool(alignWithMarginsPath);
-        set => SetXmlNodeString(alignWithMarginsPath, value ? "1" : "0");
+        get => GetXmlNodeBool(AlignWithMarginsPath);
+        set => SetXmlNodeString(AlignWithMarginsPath, value ? "1" : "0");
     }
 
     #endregion
 
     #region differentOddEven
 
-    private const string differentOddEvenPath = "@differentOddEven";
+    private const string DifferentOddEvenPath = "@differentOddEven";
 
     /// <summary>
     ///     Gets/sets the flag that tells Excel to display different headers and footers on odd and even pages.
     /// </summary>
-    public bool differentOddEven
+    public bool DifferentOddEven
     {
-        get => GetXmlNodeBool(differentOddEvenPath);
-        set => SetXmlNodeString(differentOddEvenPath, value ? "1" : "0");
+        get => GetXmlNodeBool(DifferentOddEvenPath);
+        set => SetXmlNodeString(DifferentOddEvenPath, value ? "1" : "0");
     }
 
     #endregion
 
     #region differentFirst
 
-    private const string differentFirstPath = "@differentFirst";
+    private const string DifferentFirstPath = "@differentFirst";
 
     /// <summary>
     ///     Gets/sets the flag that tells Excel to display different headers and footers on the first page of the worksheet.
     /// </summary>
-    public bool differentFirst
+    public bool DifferentFirst
     {
-        get => GetXmlNodeBool(differentFirstPath);
-        set => SetXmlNodeString(differentFirstPath, value ? "1" : "0");
+        get => GetXmlNodeBool(DifferentFirstPath);
+        set => SetXmlNodeString(DifferentFirstPath, value ? "1" : "0");
     }
 
     #endregion
 
     #region ScaleWithDoc
 
-    private const string scaleWithDocPath = "@scaleWithDoc";
+    private const string ScaleWithDocPath = "@scaleWithDoc";
 
     /// <summary>
     ///     Specify whether the header and footer should scale as you use the "Shrink to fit" feature on the document
     /// </summary>
     public bool ScaleWithDocument
     {
-        get => GetXmlNodeBool(scaleWithDocPath);
-        set => SetXmlNodeBool(scaleWithDocPath, value);
+        get => GetXmlNodeBool(ScaleWithDocPath);
+        set => SetXmlNodeBool(ScaleWithDocPath, value);
     }
 
     #endregion
@@ -389,20 +394,8 @@ public sealed class ExcelHeaderFooter : XmlHelper
     ///     Provides access to the footer on odd numbered pages of the document.
     ///     If you want the same footer on both odd and even pages, then only set values in this ExcelHeaderFooterText class.
     /// </summary>
-    public ExcelHeaderFooterText OddFooter
-    {
-        get
-        {
-            if (_oddFooter == null)
-            {
-                _oddFooter =
-                    new ExcelHeaderFooterText(TopNode.SelectSingleNode("d:oddFooter", NameSpaceManager), _ws, "F");
-                ;
-            }
-
-            return _oddFooter;
-        }
-    }
+    public ExcelHeaderFooterText OddFooter => (_oddFooter ??=
+        new ExcelHeaderFooterText(TopNode.SelectSingleNode("d:oddFooter", NameSpaceManager), _ws, "F"));
 
     // evenHeader and evenFooter set differentOddEven = true
     /// <summary>
@@ -416,7 +409,7 @@ public sealed class ExcelHeaderFooter : XmlHelper
             {
                 _evenHeader = new ExcelHeaderFooterText(TopNode.SelectSingleNode("d:evenHeader", NameSpaceManager), _ws,
                     "HEVEN");
-                differentOddEven = true;
+                DifferentOddEven = true;
             }
 
             return _evenHeader;
@@ -434,7 +427,7 @@ public sealed class ExcelHeaderFooter : XmlHelper
             {
                 _evenFooter = new ExcelHeaderFooterText(TopNode.SelectSingleNode("d:evenFooter", NameSpaceManager), _ws,
                     "FEVEN");
-                differentOddEven = true;
+                DifferentOddEven = true;
             }
 
             return _evenFooter;
@@ -452,7 +445,7 @@ public sealed class ExcelHeaderFooter : XmlHelper
             {
                 _firstHeader = new ExcelHeaderFooterText(TopNode.SelectSingleNode("d:firstHeader", NameSpaceManager),
                     _ws, "HFIRST");
-                differentFirst = true;
+                DifferentFirst = true;
             }
 
             return _firstHeader;
@@ -470,13 +463,14 @@ public sealed class ExcelHeaderFooter : XmlHelper
             {
                 _firstFooter = new ExcelHeaderFooterText(TopNode.SelectSingleNode("d:firstFooter", NameSpaceManager),
                     _ws, "FFIRST");
-                differentFirst = true;
+                DifferentFirst = true;
             }
 
             return _firstFooter;
         }
     }
 
+    // ReSharper disable once InconsistentNaming
     private ExcelVmlDrawingPictureCollection _vmlDrawingsHF;
 
     /// <summary>
@@ -524,14 +518,14 @@ public sealed class ExcelHeaderFooter : XmlHelper
         if (_oddFooter != null) SetXmlNodeString("d:oddFooter", GetText(OddFooter));
 
         // only set evenHeader and evenFooter 
-        if (differentOddEven)
+        if (DifferentOddEven)
         {
             if (_evenHeader != null) SetXmlNodeString("d:evenHeader", GetText(EvenHeader));
             if (_evenFooter != null) SetXmlNodeString("d:evenFooter", GetText(EvenFooter));
         }
 
         // only set firstHeader and firstFooter
-        if (differentFirst)
+        if (DifferentFirst)
         {
             if (_firstHeader != null) SetXmlNodeString("d:firstHeader", GetText(FirstHeader));
             if (_firstFooter != null) SetXmlNodeString("d:firstFooter", GetText(FirstFooter));

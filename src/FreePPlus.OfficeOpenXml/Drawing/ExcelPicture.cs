@@ -267,10 +267,14 @@ public sealed class ExcelPicture : ExcelDrawing
             Part = drawings.Part.Package.GetPart(UriPic);
             var f = new FileInfo(UriPic.OriginalString);
             ContentType = GetContentType(f.Extension);
-            _image = Image.Load(Part.GetStream());
 
-            var iby = ImageCompat.GetImageAsByteArray(_image);
-            var ii = _drawings._package.LoadImage(iby, UriPic, Part);
+            // Read raw bytes once — avoids a full decode+re-encode roundtrip for hashing
+            using var partMs = new MemoryStream();
+            Part.GetStream().CopyTo(partMs);
+            var imageBytes = partMs.ToArray();
+            _image = Image.Load(new MemoryStream(imageBytes));
+
+            var ii = _drawings._package.LoadImage(imageBytes, UriPic, Part);
             ImageHash = ii.Hash;
 
             var relID = GetXmlNodeString("xdr:pic/xdr:nvPicPr/xdr:cNvPr/a:hlinkClick/@r:id");
@@ -325,13 +329,13 @@ public sealed class ExcelPicture : ExcelDrawing
         //Changed to stream 2/4-13 (issue 14834). Thnx SClause
         var package = drawings.Worksheet._package.Package;
         ContentType = GetContentType(imageFile.Extension);
-        using var imagestream = new FileStream(imageFile.FullName, FileMode.Open, FileAccess.Read);
-        _image = Image.Load(imagestream);
 
-        var img = ImageCompat.GetImageAsByteArray(_image);
+        // Read file bytes once — avoids a full decode+re-encode roundtrip
+        var imageBytes = File.ReadAllBytes(imageFile.FullName);
+        _image = Image.Load(new MemoryStream(imageBytes));
 
         UriPic = GetNewUri(package, "/xl/media/{0}" + imageFile.Name);
-        var ii = _drawings._package.AddImage(img, UriPic, ContentType);
+        var ii = _drawings._package.AddImage(imageBytes, UriPic, ContentType);
         string relID;
         if (!drawings._hashes.ContainsKey(ii.Hash))
         {
