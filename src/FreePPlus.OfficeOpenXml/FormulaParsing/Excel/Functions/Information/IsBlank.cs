@@ -36,9 +36,8 @@ public class IsBlank : ExcelFunction
         if (arguments == null || arguments.Count() == 0) return CreateResult(true, DataType.Boolean);
         var result = true;
         foreach (var arg in arguments)
-            if (arg.Value is ExcelDataProvider.IRangeInfo)
+            if (arg.Value is ExcelDataProvider.IRangeInfo r)
             {
-                var r = (ExcelDataProvider.IRangeInfo)arg.Value;
                 if (r.GetValue(r.Address._fromRow, r.Address._fromCol) != null) result = false;
             }
             else

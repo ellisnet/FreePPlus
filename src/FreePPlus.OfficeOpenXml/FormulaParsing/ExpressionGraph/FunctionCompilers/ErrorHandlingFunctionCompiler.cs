@@ -48,14 +48,17 @@ public class ErrorHandlingFunctionCompiler : FunctionCompiler
             try
             {
                 var arg = child.Compile();
-                BuildFunctionArguments(arg != null ? arg : null, args);
+                BuildFunctionArguments(arg, args);
             }
             catch (ExcelErrorValueException efe)
             {
                 return ((ErrorHandlingFunction)Function).HandleError(efe.ErrorValue.ToString());
             }
-            catch // (Exception e)
+            catch
             {
+                // Intentionally catch all exceptions during formula evaluation.
+                // Error-handling functions (IFERROR, ISERROR, etc.) must trap any
+                // error and return a #VALUE! result rather than propagating the exception.
                 return ((ErrorHandlingFunction)Function).HandleError(ExcelErrorValue.Values.Value);
             }
 

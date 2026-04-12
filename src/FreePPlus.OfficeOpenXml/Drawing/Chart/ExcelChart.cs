@@ -469,7 +469,7 @@ public class ExcelChart : ExcelDrawing
             eChartType.SurfaceTopView => "c:surfaceChart",
             eChartType.SurfaceTopViewWireframe => "c:surfaceChart",
             eChartType.StockHLC => "c:stockChart",
-            _ => throw new NotImplementedException("Chart type not implemented")
+            _ => throw new NotSupportedException($"Chart type '{ChartType}' is not supported")
         };
     }
 

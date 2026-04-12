@@ -79,8 +79,8 @@ internal class TextFileLogger : IFormulaParserLogger
 
     public void Dispose()
     {
-        _sw.Close();
         _sw.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     private void WriteSeparatorAndTimeStamp()

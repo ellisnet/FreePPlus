@@ -190,10 +190,6 @@ public enum eSortType
 public class ExcelPivotTableField : XmlHelper
 {
     internal ExcelPivotTableFieldCollectionBase<ExcelPivotTableFieldItem> _items;
-    //public ExcelPivotGrouping DateGrouping
-    //{
-
-    //}
     internal ExcelPivotTablePageFieldSettings _pageFieldSettings;
     internal ExcelPivotTable _table;
 

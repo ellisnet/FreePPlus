@@ -13,64 +13,7 @@ public class ExcelSparklineGroup : XmlHelper
     private const string _dispBlanksAsPath = "@displayEmptyCellsAs";
 
     private const string _typePath = "@type";
-    // Schema here... https://msdn.microsoft.com/en-us/library/hh656506(v=office.12).aspx
 
-    /*****
-    <ext xmlns:x14="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" uri="{05C60535-1F16-4fd2-B633-F4F36F0B64E0}">
-        <x14:sparklineGroups xmlns:xm="http://schemas.microsoft.com/office/excel/2006/main">
-            <x14:sparklineGroup xr2:uid="{C83E6921-40D4-4DE5-9D8A-DC5D29881A86}" negative="1" displayEmptyCellsAs="gap" type="stacked">
-                <x14:colorSeries rgb="FF376092"/>
-                <x14:colorNegative rgb="FFD00000"/>
-                <x14:colorAxis rgb="FF000000"/>
-                <x14:colorMarkers rgb="FFD00000"/>
-                <x14:colorFirst rgb="FFD00000"/>
-                <x14:colorLast rgb="FFD00000"/>
-                <x14:colorHigh rgb="FFD00000"/>
-                <x14:colorLow rgb="FFD00000"/>
-                <x14:sparklines>
-                    <x14:sparkline>
-                        <xm:f>Sheet1!A1:A4</xm:f>
-                        <xm:sqref>A7</xm:sqref>
-                    </x14:sparkline>
-                </x14:sparklines>
-            </x14:sparklineGroup>
-        </x14:sparklineGroups>
-    </ext>
-      ****/
-    /* Schema here...https://msdn.microsoft.com/en-us/library/hh656506(v=office.12).aspx
- <xsd:complexType name="CT_SparklineGroup">
-<xsd:sequence>
-<xsd:element name="colorSeries" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element name="colorNegative" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element name="colorAxis" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element name="colorMarkers" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element name="colorFirst" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element name="colorLast" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element name="colorHigh" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element name="colorLow" minOccurs="0" maxOccurs="1" type="x:CT_Color"/>
-<xsd:element ref="xm:f" minOccurs="0" maxOccurs="1"/>
-<xsd:element name="sparklines" type="CT_Sparklines" minOccurs="1" maxOccurs="1"/>
-</xsd:sequence>
-<xsd:attribute name="manualMax" type="xsd:double" use="optional"/>
-<xsd:attribute name="manualMin" type="xsd:double" use="optional"/>
-<xsd:attribute name="lineWeight" type="xsd:double" use="optional" default="0.75"/>
-<xsd:attribute name="type" type="ST_SparklineType" use="optional" default="line"/>
-<xsd:attribute name="dateAxis" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="displayEmptyCellsAs" type="ST_DispBlanksAs" use="optional" default="zero"/>
-<xsd:attribute name="markers" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="high" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="low" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="first" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="last" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="negative" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="displayXAxis" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="displayHidden" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute name="minAxisType" type="ST_SparklineAxisMinMax" use="optional" default="individual"/>
-<xsd:attribute name="maxAxisType" type="ST_SparklineAxisMinMax" use="optional" default="individual"/>
-<xsd:attribute name="rightToLeft" type="xsd:boolean" use="optional" default="false"/>
-<xsd:attribute ref="xr2:uid"/>
-</xsd:complexType>
-*/
     private readonly ExcelWorksheet _ws;
 
     internal ExcelSparklineGroup(XmlNamespaceManager ns, XmlElement topNode, ExcelWorksheet ws) : base(ns, topNode)

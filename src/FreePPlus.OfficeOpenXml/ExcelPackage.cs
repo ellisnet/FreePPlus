@@ -48,11 +48,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-// ReSharper disable UnusedMember.Global
-// ReSharper disable InconsistentNaming
-
-#pragma warning disable IDE0059
-
 namespace OfficeOpenXml;
 
 /// <summary>
@@ -421,8 +416,6 @@ public sealed class ExcelPackage : IDisposable
                 Encryption.Password = password;
                 var encrHandler = new EncryptedPackageHandler();
                 ms = encrHandler.DecryptPackage(template, Encryption);
-                // ReSharper disable once RedundantAssignment
-                encrHandler = null;
             }
             else
             {
@@ -431,7 +424,6 @@ public sealed class ExcelPackage : IDisposable
 
             try
             {
-                //_package = Package.Open(_stream, FileMode.Open, FileAccess.ReadWrite);
                 Package = new ZipPackage(ms);
             }
             catch (Exception ex)
@@ -447,7 +439,6 @@ public sealed class ExcelPackage : IDisposable
         {
             throw new Exception("Passed invalid TemplatePath to Excel Template");
         }
-        //return newFile;
     }
 
     private void ConstructNewFile(string password)
@@ -463,8 +454,6 @@ public sealed class ExcelPackage : IDisposable
                 Encryption.IsEncrypted = true;
                 Encryption.Password = password;
                 ms = encrHandler.DecryptPackage(File, Encryption);
-                // ReSharper disable once RedundantAssignment
-                encrHandler = null;
             }
             else
             {
@@ -473,7 +462,6 @@ public sealed class ExcelPackage : IDisposable
 
             try
             {
-                //_package = Package.Open(_stream, FileMode.Open, FileAccess.ReadWrite);
                 Package = new ZipPackage(ms);
             }
             catch (Exception ex)
@@ -487,7 +475,6 @@ public sealed class ExcelPackage : IDisposable
         }
         else
         {
-            //_package = Package.Open(_stream, FileMode.Create, FileAccess.ReadWrite);
             Package = new ZipPackage(ms);
             CreateBlankWb();
         }

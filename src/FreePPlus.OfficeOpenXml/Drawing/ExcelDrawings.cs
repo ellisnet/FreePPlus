@@ -308,7 +308,7 @@ public class ExcelDrawings : IEnumerable<ExcelDrawing>, IDisposable
         if (ChartType == eChartType.StockHLC ||
             ChartType == eChartType.StockOHLC ||
             ChartType == eChartType.StockVOHLC)
-            throw new NotImplementedException("Chart type is not supported in the current version");
+            throw new NotSupportedException($"Chart type '{ChartType}' is not supported in the current version");
         if (Worksheet is ExcelChartsheet && _drawings.Count > 0)
             throw new InvalidOperationException("Chart Worksheets can't have more than one chart");
         var drawNode = CreateDrawingXml();

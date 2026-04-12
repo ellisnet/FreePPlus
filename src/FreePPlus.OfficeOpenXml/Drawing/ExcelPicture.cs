@@ -62,7 +62,7 @@ public sealed class ExcelPicture : ExcelDrawing
 
     private Image _image;
 
-    internal ZipPackagePart Part;
+    internal ZipPackagePart Part { get; set; }
 
     internal string ImageHash { get; set; }
 
@@ -273,8 +273,6 @@ public sealed class ExcelPicture : ExcelDrawing
             var ii = _drawings._package.LoadImage(iby, UriPic, Part);
             ImageHash = ii.Hash;
 
-            //_height = _image.Height;
-            //_width = _image.Width;
             var relID = GetXmlNodeString("xdr:pic/xdr:nvPicPr/xdr:cNvPr/a:hlinkClick/@r:id");
             if (!string.IsNullOrEmpty(relID))
             {
@@ -327,12 +325,11 @@ public sealed class ExcelPicture : ExcelDrawing
         //Changed to stream 2/4-13 (issue 14834). Thnx SClause
         var package = drawings.Worksheet._package.Package;
         ContentType = GetContentType(imageFile.Extension);
-        var imagestream = new FileStream(imageFile.FullName, FileMode.Open, FileAccess.Read);
+        using var imagestream = new FileStream(imageFile.FullName, FileMode.Open, FileAccess.Read);
         _image = Image.Load(imagestream);
 
         var img = ImageCompat.GetImageAsByteArray(_image);
 
-        imagestream.Close();
         UriPic = GetNewUri(package, "/xl/media/{0}" + imageFile.Name);
         var ii = _drawings._package.AddImage(img, UriPic, ContentType);
         string relID;
@@ -343,7 +340,6 @@ public sealed class ExcelPicture : ExcelDrawing
                 TargetMode.Internal, ExcelPackage.SchemaRelationships + "/image");
             relID = RelPic.Id;
             _drawings._hashes.Add(ii.Hash, relID);
-            AddNewPicture(img, relID);
         }
         else
         {
@@ -365,7 +361,6 @@ public sealed class ExcelPicture : ExcelDrawing
     {
         switch (extension.ToLower(CultureInfo.InvariantCulture))
         {
-            // ReSharper disable RedundantCaseLabel
             case BmpFormat.FormatDefaultExtension:
                 return BmpFormat.FormatMimeType;
 
@@ -401,7 +396,6 @@ public sealed class ExcelPicture : ExcelDrawing
             case JpegFormat.FormatAltDefaultExtension:
             default:
                 return JpegFormat.FormatMimeType;
-            // ReSharper restore RedundantCaseLabel
         }
     }
 
@@ -467,14 +461,6 @@ public sealed class ExcelPicture : ExcelDrawing
             default:
                 return JpegFormat.Instance;
         }
-    } //Add a new image to the compare collection
-
-    private void AddNewPicture(byte[] img, string relID)
-    {
-        var newPic = new ExcelDrawings.ImageCompare();
-        newPic.image = img;
-        newPic.relID = relID;
-        //_drawings._pics.Add(newPic);
     }
 
     #endregion
