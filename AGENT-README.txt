@@ -1020,8 +1020,8 @@ Feature-to-test-file mapping:
   comments, data validation, conditional formatting, protection, hyperlinks,
   rich text, CSV loading, headers/footers, print settings):
     -> tests/FreePPlus.OfficeOpenXml.Tests/WorksheetTests.cs
-       This is the MOST COMPREHENSIVE test file with 300+ tests covering
-       virtually all worksheet functionality.
+       This is the MOST COMPREHENSIVE test file, covering virtually all
+       worksheet functionality.
 
   Loading data from collections (headers, anonymous types, inheritance,
   member selection, Description/DisplayName attributes, table styles,

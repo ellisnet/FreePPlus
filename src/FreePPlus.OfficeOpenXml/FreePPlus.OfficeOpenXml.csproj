@@ -31,11 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.100" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.5" />
+    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.117" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.7" />
   </ItemGroup>
 
 </Project>
