@@ -6,7 +6,7 @@
 
     <!-- NuGet package properties -->
     <PackageId>FreePPlus.LgplLicenseForever</PackageId>
-    <Version>1.0.106</Version>
+    <Version>1.0.118</Version>
     <Authors>Jeremy Ellis</Authors>
     <Product>FreePPlus</Product>
     <Title>FreePPlus</Title>
