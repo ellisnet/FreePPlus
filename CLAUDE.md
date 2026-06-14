@@ -1,8 +1,5 @@
-# Project Documentation
+This project's complete documentation for AI coding agents — including API reference, usage examples, installation instructions, common pitfalls, and architectural guidance — is maintained in a single file:
 
-This project's complete API reference, usage examples, installation instructions,
-and coding guidance for AI agents is located in:
+→ **[./AGENT-README.txt](./AGENT-README.txt)**
 
-📄 **[./AGENT-README.txt](./AGENT-README.txt)**
-
-Please read that file for all project context needed to work with this codebase.
+Read that file in full before making changes to, or consuming, this library.
