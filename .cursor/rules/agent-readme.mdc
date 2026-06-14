@@ -1,6 +1,6 @@
 ---
 description: Project documentation and API reference for AI coding agents
-globs: ["**/*"]
+alwaysApply: true
 ---
 
 This project's complete documentation for AI coding agents — including API reference, usage examples, installation instructions, common pitfalls, and architectural guidance — is maintained in a single file:
