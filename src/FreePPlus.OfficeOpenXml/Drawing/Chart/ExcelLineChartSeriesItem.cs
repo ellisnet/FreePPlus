@@ -119,9 +119,16 @@ public sealed class ExcelLineChartSeriesItem : ExcelChartSeriesItem
             var color = GetXmlNodeString(LineColorPath);
             if (color == "")
                 return Color.Black;
-            return Color.FromArgb(Convert.ToInt32(color, 16));
+            var c = ColorFromRgbHex(color);
+            var a = GetAlphaChannel(LineColorPath);
+            if (a != 255) c = Color.FromArgb(a, c);
+            return c;
         }
-        set => SetXmlNodeString(LineColorPath, value.ToArgbInt32().ToString("X")[2..], true);
+        set
+        {
+            SetXmlNodeString(LineColorPath, value.ToArgbInt32().ToString("X8")[2..], true);
+            SetAlphaChannel(value, LineColorPath);
+        }
     }
 
     /// <summary>
@@ -183,8 +190,15 @@ public sealed class ExcelLineChartSeriesItem : ExcelChartSeriesItem
             var color = GetXmlNodeString(MarkerLineColorPath);
             if (color == "")
                 return Color.Black;
-            return Color.FromArgb(Convert.ToInt32(color, 16));
+            var c = ColorFromRgbHex(color);
+            var a = GetAlphaChannel(MarkerLineColorPath);
+            if (a != 255) c = Color.FromArgb(a, c);
+            return c;
         }
-        set => SetXmlNodeString(MarkerLineColorPath, value.ToArgbInt32().ToString("X")[2..], true);
+        set
+        {
+            SetXmlNodeString(MarkerLineColorPath, value.ToArgbInt32().ToString("X8")[2..], true);
+            SetAlphaChannel(value, MarkerLineColorPath);
+        }
     }
 }

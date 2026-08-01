@@ -58,6 +58,6 @@ public class ExcelSparklineColor : XmlHelper, IColor
     /// <param name="color">The color</param>
     public void SetColor(Color color)
     {
-        Rgb = color.ToArgbInt32().ToString("X");
+        Rgb = color.ToArgbInt32().ToString("X8");
     }
 }

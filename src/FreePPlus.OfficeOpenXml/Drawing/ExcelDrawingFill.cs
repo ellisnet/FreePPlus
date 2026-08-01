@@ -111,7 +111,9 @@ public sealed class ExcelDrawingFill : XmlHelper
             var col = GetXmlNodeString(_fillPath + ColorPath);
             if (col == "")
                 return Color.FromArgb(79, 129, 189);
-            return Color.FromArgb(int.Parse(col, NumberStyles.AllowHexSpecifier));
+            //the stored value is six RGB hex digits with no alpha byte, so build an opaque color
+            var argb = int.Parse(col, NumberStyles.AllowHexSpecifier);
+            return Color.FromArgb((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
         }
         set
         {

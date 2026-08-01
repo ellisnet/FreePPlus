@@ -127,16 +127,16 @@ public sealed class Border : StyleBase
         SetBorderAroundStyle(Style, addr);
 
         _ChangedEvent(this,
-            new StyleChangeEventArgs(eStyleClass.BorderTop, eStyleProperty.Color, Color.ToArgbInt32().ToString("X"),
+            new StyleChangeEventArgs(eStyleClass.BorderTop, eStyleProperty.Color, Color.ToArgbInt32().ToString("X8"),
                 _positionID, new ExcelAddress(addr._fromRow, addr._fromCol, addr._fromRow, addr._toCol).Address));
         _ChangedEvent(this,
-            new StyleChangeEventArgs(eStyleClass.BorderBottom, eStyleProperty.Color, Color.ToArgbInt32().ToString("X"),
+            new StyleChangeEventArgs(eStyleClass.BorderBottom, eStyleProperty.Color, Color.ToArgbInt32().ToString("X8"),
                 _positionID, new ExcelAddress(addr._toRow, addr._fromCol, addr._toRow, addr._toCol).Address));
         _ChangedEvent(this,
-            new StyleChangeEventArgs(eStyleClass.BorderLeft, eStyleProperty.Color, Color.ToArgbInt32().ToString("X"),
+            new StyleChangeEventArgs(eStyleClass.BorderLeft, eStyleProperty.Color, Color.ToArgbInt32().ToString("X8"),
                 _positionID, new ExcelAddress(addr._fromRow, addr._fromCol, addr._toRow, addr._fromCol).Address));
         _ChangedEvent(this,
-            new StyleChangeEventArgs(eStyleClass.BorderRight, eStyleProperty.Color, Color.ToArgbInt32().ToString("X"),
+            new StyleChangeEventArgs(eStyleClass.BorderRight, eStyleProperty.Color, Color.ToArgbInt32().ToString("X8"),
                 _positionID, new ExcelAddress(addr._fromRow, addr._toCol, addr._toRow, addr._toCol).Address));
     }
 

@@ -852,7 +852,7 @@ public class ExcelWorksheet : XmlHelper, IEqualityComparer<ExcelWorksheet>, IDis
                 return Color.Empty;
             return Color.FromArgb(int.Parse(col, NumberStyles.AllowHexSpecifier));
         }
-        set => SetXmlNodeString(tabColorPath, value.ToArgbInt32().ToString("X"));
+        set => SetXmlNodeString(tabColorPath, value.ToArgbInt32().ToString("X8"));
     }
 
     private const string codeModuleNamePath = "d:sheetPr/@codeName";

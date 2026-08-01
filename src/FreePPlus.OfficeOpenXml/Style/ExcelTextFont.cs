@@ -160,12 +160,14 @@ public class ExcelTextFont : XmlHelper
             var col = GetXmlNodeString(_underLineColorPath);
             if (col == "")
                 return Color.Empty;
-            return Color.FromArgb(int.Parse(col, NumberStyles.AllowHexSpecifier));
+            //the stored value is six RGB hex digits with no alpha byte, so build an opaque color
+            var argb = int.Parse(col, NumberStyles.AllowHexSpecifier);
+            return Color.FromArgb((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
         }
         set
         {
             CreateTopNode();
-            SetXmlNodeString(_underLineColorPath, value.ToArgbInt32().ToString("X").Substring(2, 6));
+            SetXmlNodeString(_underLineColorPath, value.ToArgbInt32().ToString("X8").Substring(2, 6));
         }
     }
 
@@ -206,12 +208,14 @@ public class ExcelTextFont : XmlHelper
             var col = GetXmlNodeString(_colorPath);
             if (col == "")
                 return Color.Empty;
-            return Color.FromArgb(int.Parse(col, NumberStyles.AllowHexSpecifier));
+            //the stored value is six RGB hex digits with no alpha byte, so build an opaque color
+            var argb = int.Parse(col, NumberStyles.AllowHexSpecifier);
+            return Color.FromArgb((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
         }
         set
         {
             CreateTopNode();
-            SetXmlNodeString(_colorPath, value.ToArgbInt32().ToString("X").Substring(2, 6));
+            SetXmlNodeString(_colorPath, value.ToArgbInt32().ToString("X8").Substring(2, 6));
         }
     }
 

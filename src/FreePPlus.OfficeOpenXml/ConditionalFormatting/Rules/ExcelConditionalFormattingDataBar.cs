@@ -68,7 +68,7 @@ public class ExcelConditionalFormattingDataBar
             return Color.White;
         }
 
-        set => SetXmlNodeString(ColorPath, value.ToArgbInt32().ToString("X"));
+        set => SetXmlNodeString(ColorPath, value.ToArgbInt32().ToString("X8"));
     }
 
     #region Constructors

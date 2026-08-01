@@ -251,12 +251,13 @@ public class ExcelVmlDrawingComment : ExcelVmlDrawingBase, IRangeID
             if (col.StartsWith("#")) col = col.Substring(1, col.Length - 1);
             int res;
             if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
-                return Color.FromArgb(res);
+                //the stored value is six RGB hex digits with no alpha byte, so build an opaque color
+                return Color.FromArgb((res >> 16) & 0xFF, (res >> 8) & 0xFF, res & 0xFF);
             return Color.Empty;
         }
         set
         {
-            var color = "#" + value.ToArgbInt32().ToString("X").Substring(2, 6);
+            var color = "#" + value.ToArgbInt32().ToString("X8").Substring(2, 6);
             SetXmlNodeString(BACKGROUNDCOLOR_PATH, color);
             //SetXmlNode(BACKGROUNDCOLOR2_PATH, color);
         }
@@ -313,12 +314,13 @@ public class ExcelVmlDrawingComment : ExcelVmlDrawingBase, IRangeID
             if (col.StartsWith("#")) col = col.Substring(1, col.Length - 1);
             int res;
             if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
-                return Color.FromArgb(res);
+                //the stored value is six RGB hex digits with no alpha byte, so build an opaque color
+                return Color.FromArgb((res >> 16) & 0xFF, (res >> 8) & 0xFF, res & 0xFF);
             return Color.Empty;
         }
         set
         {
-            var color = "#" + value.ToArgbInt32().ToString("X").Substring(2, 6);
+            var color = "#" + value.ToArgbInt32().ToString("X8").Substring(2, 6);
             SetXmlNodeString(LINECOLOR_PATH, color);
         }
     }

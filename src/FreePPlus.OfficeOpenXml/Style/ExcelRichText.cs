@@ -266,7 +266,7 @@ public class ExcelRichText : XmlHelper
         set
         {
             _collection.ConvertRichtext();
-            SetXmlNodeString(COLOR_PATH, value.ToArgbInt32().ToString("X") /*.Substring(2, 6)*/);
+            SetXmlNodeString(COLOR_PATH, value.ToArgbInt32().ToString("X8") /*.Substring(2, 6)*/);
             if (_callback != null) _callback();
         }
     }

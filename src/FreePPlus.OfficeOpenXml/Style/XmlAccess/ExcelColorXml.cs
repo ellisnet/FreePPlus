@@ -156,7 +156,7 @@ public sealed class ExcelColorXml : StyleXmlHelper
     public void SetColor(Color color)
     {
         Clear();
-        _rgb = color.ToArgbInt32().ToString("X");
+        _rgb = color.ToArgbInt32().ToString("X8");
     }
 
     internal ExcelColorXml Copy()

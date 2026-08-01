@@ -272,7 +272,15 @@ public sealed class ExcelPicture : ExcelDrawing
             using var partMs = new MemoryStream();
             Part.GetStream().CopyTo(partMs);
             var imageBytes = partMs.ToArray();
-            _image = Image.Load(new MemoryStream(imageBytes));
+            try
+            {
+                _image = Image.Load(imageBytes);
+            }
+            catch (ImageFormatException ex)
+            {
+                throw new InvalidDataException(
+                    $"The image part '{UriPic.OriginalString}' is not a supported image-file or is corrupt", ex);
+            }
 
             var ii = _drawings._package.LoadImage(imageBytes, UriPic, Part);
             ImageHash = ii.Hash;
@@ -332,7 +340,15 @@ public sealed class ExcelPicture : ExcelDrawing
 
         // Read file bytes once — avoids a full decode+re-encode roundtrip
         var imageBytes = File.ReadAllBytes(imageFile.FullName);
-        _image = Image.Load(new MemoryStream(imageBytes));
+        try
+        {
+            _image = Image.Load(imageBytes);
+        }
+        catch (ImageFormatException ex)
+        {
+            throw new InvalidDataException(
+                $"'{imageFile.FullName}' is not a supported image-file or is corrupt", ex);
+        }
 
         UriPic = GetNewUri(package, "/xl/media/{0}" + imageFile.Name);
         var ii = _drawings._package.AddImage(imageBytes, UriPic, ContentType);

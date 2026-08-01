@@ -31,7 +31,7 @@ public abstract class DxfStyleBase<T>
         if (color is { HasValue: true })
         {
             if (color.Color != null)
-                SetValue(helper, path + "/@rgb", color.Color.Value.ToArgbInt32().ToString("x"));
+                SetValue(helper, path + "/@rgb", color.Color.Value.ToArgbInt32().ToString("x8"));
             else if (color.Auto != null)
                 SetValueBool(helper, path + "/@auto", color.Auto);
             else if (color.Theme != null)

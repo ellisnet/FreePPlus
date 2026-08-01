@@ -20,7 +20,7 @@ public class ExcelDxfColor : DxfStyleBase<ExcelDxfColor>
         GetAsString(Tint) + "|" +
         GetAsString(Color == null
             ? ""
-            : Color.Value.ToArgbInt32().ToString("x"));
+            : Color.Value.ToArgbInt32().ToString("x8"));
 
     protected internal override bool HasValue =>
         Theme != null ||

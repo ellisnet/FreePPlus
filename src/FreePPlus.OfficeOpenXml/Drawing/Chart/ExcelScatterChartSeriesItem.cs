@@ -31,8 +31,6 @@
  *******************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
 using CodeBrix.Imaging;
@@ -143,7 +141,7 @@ public sealed class ExcelScatterChartSeriesItem : ExcelChartSeriesItem
                 return Color.Black;
             }
 
-            var c = Color.FromArgb(Convert.ToInt32(color, 16));
+            var c = ColorFromRgbHex(color);
             var a = GetAlphaChannel(LineColorPath);
             if (a != 255) c = Color.FromArgb(a, c);
             return c;
@@ -198,7 +196,7 @@ public sealed class ExcelScatterChartSeriesItem : ExcelChartSeriesItem
                 return Color.Black;
             }
 
-            var c = Color.FromArgb(Convert.ToInt32(color, 16));
+            var c = ColorFromRgbHex(color);
             var a = GetAlphaChannel(MarkerColorPath);
             if (a != 255) c = Color.FromArgb(a, c);
             return c;
@@ -246,7 +244,7 @@ public sealed class ExcelScatterChartSeriesItem : ExcelChartSeriesItem
                 return Color.Black;
             }
 
-            var c = Color.FromArgb(Convert.ToInt32(color, 16));
+            var c = ColorFromRgbHex(color);
             var a = GetAlphaChannel(MarkerLineColorPath);
             if (a != 255) c = Color.FromArgb(a, c);
             return c;
@@ -256,82 +254,5 @@ public sealed class ExcelScatterChartSeriesItem : ExcelChartSeriesItem
             SetXmlNodeString(MarkerLineColorPath, value.ToArgbInt32().ToString("X8")[2..], true);
             SetAlphaChannel(value, MarkerLineColorPath);
         }
-    }
-
-    /// <summary>
-    ///     write alpha value (if Color.A != 255)
-    /// </summary>
-    /// <param name="c">Color</param>
-    /// <param name="xPath">where to write</param>
-    /// <remarks>
-    ///     alpha-values may only written to color-nodes
-    ///     eg: a:prstClr (preset), a:hslClr (hsl), a:schemeClr (schema), a:sysClr (system), a:scrgbClr (rgb percent) or
-    ///     a:srgbClr (rgb hex)
-    ///     .../a:prstClr/a:alpha/@val
-    /// </remarks>
-    private void SetAlphaChannel(Color c, string xPath)
-    {
-        var rgba = c.ToRgba32();
-
-        //check 4 Alpha-values
-        if (rgba.A != 255)
-        {
-            //opaque color => alpha == 255 //source: https://msdn.microsoft.com/en-us/library/1hstcth9%28v=vs.110%29.aspx
-            //check path
-            var s = SetXPath4Alpha(xPath);
-            if (s.Length > 0)
-            {
-                var alpha = (rgba.A == 0 ? 0 : (100 - rgba.A) * 1000)
-                    .ToString(); //note: excel writes 100% transparency (alpha=0) as "0" and not as "100000"
-                SetXmlNodeString(s, alpha, true);
-            }
-        }
-    }
-
-    /// <summary>
-    ///     read AlphaChannel from a:solidFill
-    /// </summary>
-    /// <param name="xPath"></param>
-    /// <returns>alpha or 255 if their is no such node</returns>
-    private int GetAlphaChannel(string xPath)
-    {
-        var r = 255;
-        var s = SetXPath4Alpha(xPath);
-        if (s.Length > 0)
-            if (int.TryParse(GetXmlNodeString(s), NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
-                r = i == 0 ? 0 : 100 - i / 1000;
-        return r;
-    }
-
-    /// <summary>
-    ///     creates xPath to alpha attribute for a color
-    ///     eg: a:prstClr/a:alpha/@val
-    /// </summary>
-    /// <param name="xPath">xPath to color node</param>
-    /// <returns></returns>
-    private string SetXPath4Alpha(string xPath)
-    {
-        // ReSharper disable once RedundantAssignment
-        var s = string.Empty;
-        if (xPath.EndsWith("@val"))
-            // ReSharper disable once StringIndexOfIsCultureSpecific.1
-            xPath = xPath[..xPath.IndexOf("@val")];
-        if (xPath.EndsWith("/"))
-            //cut tailing slash
-            xPath = xPath[..^1];
-        //parent node must be a color node/definition
-        var colorDefs = new List<string>
-            { "a:prstClr", "a:hslClr", "a:schemeClr", "a:sysClr", "a:scrgbClr", "a:srgbClr" };
-        if (colorDefs.Find(cd => xPath.EndsWith(cd, StringComparison.Ordinal)) != null)
-        {
-            s = xPath + "/a:alpha/@val";
-        }
-        else
-        {
-            Debug.Assert(false);
-            throw new InvalidOperationException("alpha-values can only set to Colors");
-        }
-
-        return s;
     }
 }

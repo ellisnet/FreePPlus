@@ -336,7 +336,11 @@ public class ExcelDrawings : IEnumerable<ExcelDrawing>, IDisposable
     ///     Add a picure to the worksheet
     /// </summary>
     /// <param name="Name"></param>
-    /// <param name="image">An image. Allways saved in then JPeg format</param>
+    /// <param name="image">
+    ///     An image. Saved in the image's own format when it has one - that is, when it was loaded from
+    ///     encoded bytes or previously saved. An image constructed in memory has no format of its own and
+    ///     is saved as PNG.
+    /// </param>
     /// <returns></returns>
     public ExcelPicture AddPicture(string Name, Image image)
     {
@@ -347,7 +351,11 @@ public class ExcelDrawings : IEnumerable<ExcelDrawing>, IDisposable
     ///     Add a picure to the worksheet
     /// </summary>
     /// <param name="Name"></param>
-    /// <param name="image">An image. Allways saved in then JPeg format</param>
+    /// <param name="image">
+    ///     An image. Saved in the image's own format when it has one - that is, when it was loaded from
+    ///     encoded bytes or previously saved. An image constructed in memory has no format of its own and
+    ///     is saved as PNG.
+    /// </param>
     /// <param name="Hyperlink">Picture Hyperlink</param>
     /// <returns></returns>
     public ExcelPicture AddPicture(string Name, Image image, Uri Hyperlink)

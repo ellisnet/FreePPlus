@@ -407,7 +407,7 @@ public class ExcelConditionalFormattingColorScaleValue
             CreateNodeByOrdem(
                 eExcelConditionalFormattingValueObjectNodeType.Color,
                 ExcelConditionalFormattingConstants.Paths.RgbAttribute,
-                value.ToArgbInt32().ToString("x"));
+                value.ToArgbInt32().ToString("x8"));
     }
 
     /// <summary>

@@ -63,7 +63,9 @@ public class ExcelBackgroundImage : XmlHelper
 
     /// <summary>
     ///     The background image of the worksheet.
-    ///     The image will be saved internally as a jpg.
+    ///     The image is saved internally in its own format when it has one - that is, when it was loaded from
+    ///     encoded bytes or previously saved. An image constructed in memory has no format of its own and is
+    ///     saved as PNG.
     /// </summary>
     public Image Image
     {

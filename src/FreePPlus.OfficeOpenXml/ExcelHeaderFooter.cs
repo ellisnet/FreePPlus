@@ -163,7 +163,7 @@ public class ExcelHeaderFooterText
 
             // Read file bytes once — avoids a full decode+re-encode roundtrip
             imageBytes = File.ReadAllBytes(pictureFile.FullName);
-            picture = Image.Load(new MemoryStream(imageBytes));
+            picture = Image.Load(imageBytes);
         }
         catch (Exception ex)
         {

@@ -31,7 +31,10 @@
  *******************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
+using CodeBrix.Imaging;
 
 namespace OfficeOpenXml.Drawing.Chart;
 
@@ -211,6 +214,87 @@ public class ExcelChartSeriesItem : XmlHelper
     {
         var n = TopNode.SelectSingleNode("c:tx", NameSpaceManager);
         if (n != null) n.InnerXml = "";
+    }
+
+    /// <summary>
+    ///     Reads the six RGB hex digits stored at a color path and returns them as an opaque color.
+    /// </summary>
+    /// <param name="hex">The stored value, which carries no alpha byte.</param>
+    /// <returns>An opaque color.</returns>
+    private protected static Color ColorFromRgbHex(string hex)
+    {
+        var argb = Convert.ToInt32(hex, 16);
+        return Color.FromArgb((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
+    }
+
+    /// <summary>
+    ///     Writes the alpha value of a color as an OOXML opacity value.
+    /// </summary>
+    /// <param name="c">Color</param>
+    /// <param name="xPath">where to write</param>
+    /// <remarks>
+    ///     alpha-values may only be written to color-nodes
+    ///     eg: a:prstClr (preset), a:hslClr (hsl), a:schemeClr (schema), a:sysClr (system), a:scrgbClr (rgb percent) or
+    ///     a:srgbClr (rgb hex)
+    ///     .../a:prstClr/a:alpha/@val
+    ///     OOXML a:alpha expresses OPACITY in 1000ths of a percent, so the legal range is 0 (fully transparent)
+    ///     to 100000 (fully opaque). A fully opaque color needs no node at all, and any stale node left over
+    ///     from a previously transparent color is removed so the old transparency does not survive in the file.
+    /// </remarks>
+    private protected void SetAlphaChannel(Color c, string xPath)
+    {
+        var rgba = c.ToRgba32();
+
+        var s = GetXPath4Alpha(xPath);
+        if (s.Length == 0) return;
+
+        if (rgba.A == 255)
+        {
+            //opaque color => drop any alpha node a previous, partly transparent color left behind
+            DeleteNode(s[..s.LastIndexOf('/')]);
+            return;
+        }
+
+        var alpha = ((int)Math.Round(rgba.A * 100000.0 / 255.0)).ToString(CultureInfo.InvariantCulture);
+        SetXmlNodeString(s, alpha, true);
+    }
+
+    /// <summary>
+    ///     Reads the alpha channel from a color node.
+    /// </summary>
+    /// <param name="xPath">xPath to the color node</param>
+    /// <returns>alpha as a 0-255 byte, or 255 (fully opaque) if there is no such node</returns>
+    private protected int GetAlphaChannel(string xPath)
+    {
+        var r = 255;
+        var s = GetXPath4Alpha(xPath);
+        if (s.Length > 0)
+            if (int.TryParse(GetXmlNodeString(s), NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
+                r = (int)Math.Round(Math.Clamp(i, 0, 100000) * 255.0 / 100000.0);
+        return r;
+    }
+
+    /// <summary>
+    ///     Builds the xPath to the alpha attribute for a color.
+    ///     eg: a:prstClr/a:alpha/@val
+    /// </summary>
+    /// <param name="xPath">xPath to color node</param>
+    /// <returns>The xPath to the alpha attribute.</returns>
+    /// <exception cref="InvalidOperationException">The path does not point at a color node.</exception>
+    private protected static string GetXPath4Alpha(string xPath)
+    {
+        if (xPath.EndsWith("@val", StringComparison.Ordinal))
+            xPath = xPath[..xPath.IndexOf("@val", StringComparison.Ordinal)];
+        if (xPath.EndsWith("/", StringComparison.Ordinal))
+            //cut tailing slash
+            xPath = xPath[..^1];
+        //parent node must be a color node/definition
+        var colorDefs = new List<string>
+            { "a:prstClr", "a:hslClr", "a:schemeClr", "a:sysClr", "a:scrgbClr", "a:srgbClr" };
+        if (colorDefs.Find(cd => xPath.EndsWith(cd, StringComparison.Ordinal)) == null)
+            throw new InvalidOperationException("alpha-values can only set to Colors");
+
+        return xPath + "/a:alpha/@val";
     }
 
     // ReSharper disable InconsistentNaming
