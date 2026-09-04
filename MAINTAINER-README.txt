@@ -139,9 +139,9 @@ rationale is written out in a comment block at the top of the csproj; keep that
 comment in sync with any change.
 
 Because the version moves with the clock, no version number belongs in
-AGENT-README.txt, README.md or any other documentation file. The one exception
-is the historical provenance statement ("a fork of EPPlus 4.5.3.3"), which is a
-fact about the past and stays.
+AGENT-README.txt, README.md or any other documentation file -- not even the
+upstream release this project forked from. That belongs in
+THIRD-PARTY-NOTICES.txt, and the provenance statements elsewhere point there.
 
 The nuspec/ folder is stale: it pins an old version, targets net8.0 and
 references a FreePPlus.Imaging.dll that no longer exists. Do not resurrect it

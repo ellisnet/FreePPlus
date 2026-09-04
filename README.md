@@ -1,20 +1,33 @@
 # FreePPlus
 Create advanced Excel spreadsheets using .NET, without the need of interop.
 
-FreePPlus is a .NET library that reads and writes Excel files using the Office Open XML format (xlsx). 
-FreePPlus has one third-party dependency - the CodeBrix.Imaging package for image and font handling.
-It also depends on a few Microsoft.Extensions and System.Security.Cryptography packages.
-
+FreePPlus is a .NET library that reads and writes Excel files using the Office Open XML format (xlsx).
 FreePPlus is provided as a .NET 10 library and associated `FreePPlus.LgplLicenseForever` NuGet package.
+
 FreePPlus supports applications and assemblies that target Microsoft .NET version 10.0 and later.
+Microsoft .NET version 10.0 is a Long-Term Supported (LTS) version of .NET, and was released on Nov 11, 2025; and will be actively supported by Microsoft until Nov 14, 2028.
+Please update your C#/.NET code and projects to the latest LTS version of Microsoft .NET.
 
-Microsoft .NET version 10.0 is a Long-Term Supported (LTS) version of .NET, and was released on Nov 11, 
-2025; and will be actively supported by Microsoft until Nov 14, 2028. Please update your C#/.NET code 
-and projects to the latest LTS version of Microsoft .NET.
+## Installation
 
-FreePPlus is a fork of the code of the popular EPPlus library version 4.5.3.3 - see below for licensing
-details.
- 
+```
+dotnet add package FreePPlus.LgplLicenseForever
+```
+
+**The NuGet package ID and the namespace are completely different names here, and it is the easiest thing about this package to get wrong.** There is no package named `OfficeOpenXml`, and `using FreePPlus;` resolves to nothing:
+
+* NuGet package ID: `FreePPlus.LgplLicenseForever`
+* Assembly: `FreePPlus.OfficeOpenXml`
+* Primary namespace: `OfficeOpenXml` - i.e. `using OfficeOpenXml;`, with `OfficeOpenXml.Style`, `OfficeOpenXml.Table` and the other sub-namespaces beneath it
+
+XML documentation (IntelliSense) ships alongside the assembly.
+
+The package pulls in the following automatically; no version pinning is needed in the consuming project:
+
+* `CodeBrix.Imaging.ApacheLicenseForever` - image and font handling
+* `Microsoft.Extensions.Configuration`, `Microsoft.Extensions.Configuration.FileExtensions` and `Microsoft.Extensions.Configuration.Json`
+* `System.Security.Cryptography.Pkcs`
+
 ## FreePPlus supports:
 * Cell Ranges 
 * Cell styling (Border, Color, Fill, Font, Number, Alignments) 
@@ -39,7 +52,6 @@ details.
 ```csharp
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using OfficeOpenXml.Table;
 
 // Create a new workbook and add a worksheet
 using var package = new ExcelPackage();
@@ -184,14 +196,21 @@ ws.Cells["A1"].Value = "Sensitive data";
 package.SaveAs(new FileInfo("Encrypted.xlsx"), "openPassword");
 ```
 
-Note that significant additional sample code is available in the `FreePPlus.OfficeOpenXml.Tests`
-project; and in `FreePPlus.OfficeOpenXml.SampleApp`.
+## Documentation
+
+The NuGet package includes `AGENT-README.txt`, a complete API reference and usage guide written for AI coding agents - point your agent at that file when it is writing code against this library.
+
+Additional sample code and usage examples are available in the `FreePPlus.OfficeOpenXml.Tests` project:
+https://github.com/ellisnet/FreePPlus/tree/main/tests/FreePPlus.OfficeOpenXml.Tests
+
+A console application that walks through a set of worked scenarios is in the `FreePPlus.OfficeOpenXml.SampleApp` project:
+https://github.com/ellisnet/FreePPlus/tree/main/samples/FreePPlus.OfficeOpenXml.SampleApp
 
 ## License
-The project is licensed under the GNU Lesser General Public License (LGPL) version 3.
-see: https://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License
 
-All code from EPPlus version 4.5.3.3 was licensed under the GNU Lesser General Public License (LGPL) 
-version 3 - as of Jan 30, 2020.  This project (FreePPlus) complies with all provisions of the open 
-source license of EPPlus version 4.5.3.3 (code) - including making all modified, adapted and derived 
-code freely available as open source, under the same license as the EPPlus code license.
+FreePPlus is licensed under the GNU Lesser General Public License (LGPL) version 3 - see the
+[LICENSE](https://github.com/ellisnet/FreePPlus/blob/main/LICENSE) file. All modified, adapted and
+derived code in this library is made freely available as open source under that same license.
+
+For licensing and provenance information about the open source code included in
+this package, see [THIRD-PARTY-NOTICES.txt](https://github.com/ellisnet/FreePPlus/blob/main/THIRD-PARTY-NOTICES.txt).

@@ -13,7 +13,8 @@ runs on Windows, Linux and macOS and inside containers.
 
 Target framework: .NET 10 or later.
 
-PROVENANCE: FreePPlus is a fork of EPPlus 4.5.3.3. The root namespace is
+PROVENANCE: FreePPlus is a fork of EPPlus; the exact upstream release is
+recorded in THIRD-PARTY-NOTICES.txt. The root namespace is
 "OfficeOpenXml" — the SAME namespace the upstream project used — so code
 written against that generation of the upstream API compiles against FreePPlus
 after swapping the NuGet package reference. There is NO "FreePPlus" namespace;
