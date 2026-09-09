@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Samples/">
+    <Project Path="samples/FreePPlus.OfficeOpenXml.SampleApp/FreePPlus.OfficeOpenXml.SampleApp.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="AGENT-README.txt" />
+    <File Path="EXTRAS-README.txt" />
+    <File Path="global.json" />
+    <File Path="icon-codebrix-128.png" />
+    <File Path="LICENSE" />
+    <File Path="MAINTAINER-README.txt" />
+    <File Path="README-INDEX.txt" />
+    <File Path="README.md" />
+    <File Path="THIRD-PARTY-NOTICES.txt" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/FreePPlus.OfficeOpenXml.Tests/FreePPlus.OfficeOpenXml.Tests.csproj" />
+  </Folder>
+  <Project Path="src/FreePPlus.OfficeOpenXml/FreePPlus.OfficeOpenXml.csproj" />
+</Solution>

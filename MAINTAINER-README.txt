@@ -34,8 +34,9 @@ REPOSITORY LAYOUT
     LICENSE                 LGPL v3.
     THIRD-PARTY-NOTICES.txt Notices for EPPlus, DotNetZip, jzlib and zlib.
     icon-codebrix-128.png   Package icon.
-    FreePPlus.sln           Solution: library, tests, sample app, plus a
-                            "Solution Items" folder carrying the root files.
+    FreePPlus.slnx          Solution (XML slnx format): library, tests, sample
+                            app, plus a "Solution Items" folder carrying the
+                            root files.
     nuspec/                 A hand-written .nuspec kept from an earlier
                             packaging approach, with placeholder docs/ and
                             lib/ folders. It is NOT used by the current build,
@@ -88,8 +89,8 @@ in AGENT-README.txt.
 
 BUILDING
 ========
-    dotnet restore FreePPlus.sln
-    dotnet build FreePPlus.sln -c Release
+    dotnet restore FreePPlus.slnx
+    dotnet build FreePPlus.slnx -c Release
 
 The library targets net10.0 exclusively. GeneratePackageOnBuild is true, so
 every build of the library project also produces a .nupkg.

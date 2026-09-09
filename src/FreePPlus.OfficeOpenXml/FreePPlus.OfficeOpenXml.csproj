@@ -73,11 +73,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.213.41" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.10" />
+    <PackageReference Include="CodeBrix.Imaging.ApacheLicenseForever" Version="1.0.248.1113" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.12" />
   </ItemGroup>
 
 </Project>
