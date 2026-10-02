@@ -23,6 +23,7 @@
  * The author accepts no liability for any damage or loss of business that this product may cause.
  *
  * Code change notes:
+ * FreePPlus: Resolve auto-fit fonts through the package and restore drawing state on failure.
  *
  * Author							Change						Date
  * ******************************************************************************
@@ -868,7 +869,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     ///     Note: Cells containing formulas are ignored if no calculation is made.
     ///     Wrapped and merged cells are also ignored.
     /// </summary>
-    /// <remarks>This method will not work if you run in an environment that does not support GDI</remarks>
+    /// <remarks>Uses managed font measurement and ExcelPackage.AutoFitFontResolver; GDI is not required.</remarks>
     /// <param name="minimumWidth">Minimum column width</param>
     public void AutoFitColumns(double minimumWidth)
     {
@@ -891,146 +892,121 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
 
         var doAdjust = _worksheet._package.DoAdjustDrawings;
         _worksheet._package.DoAdjustDrawings = false;
-        var drawWidths = _worksheet.Drawings.GetDrawingWidths();
-
-        var fromCol = _fromCol > _worksheet.Dimension._fromCol ? _fromCol : _worksheet.Dimension._fromCol;
-        var toCol = _toCol < _worksheet.Dimension._toCol ? _toCol : _worksheet.Dimension._toCol;
-
-        if (fromCol > toCol) return; //Issue 15383
-
-        if (Addresses == null)
-            SetMinWidth(minimumWidth, fromCol, toCol);
-        else
-            foreach (var addr in Addresses)
-            {
-                fromCol = addr._fromCol > _worksheet.Dimension._fromCol ? addr._fromCol : _worksheet.Dimension._fromCol;
-                toCol = addr._toCol < _worksheet.Dimension._toCol ? addr._toCol : _worksheet.Dimension._toCol;
-                SetMinWidth(minimumWidth, fromCol, toCol);
-            }
-
-        //Get any autofilter to widen these columns
-        var afAddr = new List<ExcelAddressBase>();
-        if (_worksheet.AutoFilterAddress != null)
+        try
         {
-            afAddr.Add(new ExcelAddressBase(_worksheet.AutoFilterAddress._fromRow,
-                _worksheet.AutoFilterAddress._fromCol,
-                _worksheet.AutoFilterAddress._fromRow,
-                _worksheet.AutoFilterAddress._toCol));
-            afAddr[afAddr.Count - 1]._ws = WorkSheet;
-        }
+            var drawWidths = _worksheet.Drawings.GetDrawingWidths();
 
-        foreach (var tbl in _worksheet.Tables)
-            if (tbl.AutoFilterAddress != null)
+            var fromCol = _fromCol > _worksheet.Dimension._fromCol ? _fromCol : _worksheet.Dimension._fromCol;
+            var toCol = _toCol < _worksheet.Dimension._toCol ? _toCol : _worksheet.Dimension._toCol;
+
+            if (fromCol > toCol) return; //Issue 15383
+
+            if (Addresses == null)
+                SetMinWidth(minimumWidth, fromCol, toCol);
+            else
+                foreach (var addr in Addresses)
+                {
+                    fromCol = addr._fromCol > _worksheet.Dimension._fromCol ? addr._fromCol : _worksheet.Dimension._fromCol;
+                    toCol = addr._toCol < _worksheet.Dimension._toCol ? addr._toCol : _worksheet.Dimension._toCol;
+                    SetMinWidth(minimumWidth, fromCol, toCol);
+                }
+
+            //Get any autofilter to widen these columns
+            var afAddr = new List<ExcelAddressBase>();
+            if (_worksheet.AutoFilterAddress != null)
             {
-                afAddr.Add(new ExcelAddressBase(tbl.AutoFilterAddress._fromRow,
-                    tbl.AutoFilterAddress._fromCol,
-                    tbl.AutoFilterAddress._fromRow,
-                    tbl.AutoFilterAddress._toCol));
+                afAddr.Add(new ExcelAddressBase(_worksheet.AutoFilterAddress._fromRow,
+                    _worksheet.AutoFilterAddress._fromCol,
+                    _worksheet.AutoFilterAddress._fromRow,
+                    _worksheet.AutoFilterAddress._toCol));
                 afAddr[afAddr.Count - 1]._ws = WorkSheet;
             }
 
-        var styles = _worksheet.Workbook.Styles;
-        var nf = styles.Fonts[styles.CellXfs[0].FontId];
-        var fs = FontStyle.Regular;
-        if (nf.Bold) fs |= FontStyle.Bold;
-        if (nf.UnderLine) fs |= FontStyle.Underline;
-        if (nf.Italic) fs |= FontStyle.Italic;
-        if (nf.Strike) fs |= FontStyle.Strikeout;
-        //var nfont = new Font(nf.Name, nf.Size, fs);
-
-        var normalSize = Convert.ToSingle(ExcelWorkbook.GetWidthPixels(nf.Name, nf.Size));
-
-        /*
-
-
-         itmap b;
-
-         raphics g = null;
-
-         ry
-
-
-
-             /Check for missing GDI+, then use WPF istead.
-
-              = new Bitmap(1, 1);
-
-              = Graphics.FromImage(b);
-
-             .PageUnit = GraphicsUnit.Pixel;
-
-
-
-         atch
-
-
-
-             eturn;
-
-
-
-
-         */
-
-        foreach (var cell in this)
-        {
-            if (_worksheet.Column(cell.Start.Column).Hidden) //Issue 15338
-                continue;
-
-            if (cell.Merge || cell.Style.WrapText) continue;
-            var fntID = styles.CellXfs[cell.StyleID].FontId;
-            Font f;
-            if (fontCache.ContainsKey(fntID))
-            {
-                f = fontCache[fntID];
-            }
-            else
-            {
-                var fnt = styles.Fonts[fntID];
-                fs = FontStyle.Regular;
-                if (fnt.Bold) fs |= FontStyle.Bold;
-                if (fnt.UnderLine) fs |= FontStyle.Underline;
-                if (fnt.Italic) fs |= FontStyle.Italic;
-                if (fnt.Strike) fs |= FontStyle.Strikeout;
-                f = new Font(fnt.Name, fnt.Size, fs);
-
-                fontCache.Add(fntID, f);
-            }
-
-            var ind = styles.CellXfs[cell.StyleID].Indent;
-            var textForWidth = cell.TextForWidth;
-            var t = textForWidth + (ind > 0 && !string.IsNullOrEmpty(textForWidth) ? new string('_', ind) : "");
-            if (t.Length > 32000) t = t[..32000]; //Issue
-
-            var size = TextMeasurer.Measure(t, new TextOptions(f));
-            //var size = g.MeasureString(t, f, 10000, StringFormat.GenericDefault);
-
-            double width;
-            double r = styles.CellXfs[cell.StyleID].TextRotation;
-            if (r <= 0)
-            {
-                width = (size.Width + 5) / normalSize;
-            }
-            else
-            {
-                r = r <= 90 ? r : r - 90;
-                width = ((size.Width - size.Height) * Math.Abs(Math.Cos(Math.PI * r / 180.0)) + size.Height + 5) /
-                        normalSize;
-            }
-
-            foreach (var a in afAddr)
-                if (a.Collide(cell) != eAddressCollition.No)
+            foreach (var tbl in _worksheet.Tables)
+                if (tbl.AutoFilterAddress != null)
                 {
-                    width += 2.25;
-                    break;
+                    afAddr.Add(new ExcelAddressBase(tbl.AutoFilterAddress._fromRow,
+                        tbl.AutoFilterAddress._fromCol,
+                        tbl.AutoFilterAddress._fromRow,
+                        tbl.AutoFilterAddress._toCol));
+                    afAddr[afAddr.Count - 1]._ws = WorkSheet;
                 }
 
-            if (width > _worksheet.Column(cell._fromCol).Width)
-                _worksheet.Column(cell._fromCol).Width = width > maximumWidth ? maximumWidth : width;
-        }
+            var styles = _worksheet.Workbook.Styles;
+            var nf = styles.Fonts[styles.CellXfs[0].FontId];
+            var fs = FontStyle.Regular;
+            if (nf.Bold) fs |= FontStyle.Bold;
+            if (nf.UnderLine) fs |= FontStyle.Underline;
+            if (nf.Italic) fs |= FontStyle.Italic;
+            if (nf.Strike) fs |= FontStyle.Strikeout;
+            //var nfont = new Font(nf.Name, nf.Size, fs);
 
-        _worksheet.Drawings.AdjustWidth(drawWidths);
-        _worksheet._package.DoAdjustDrawings = doAdjust;
+            var normalSize = Convert.ToSingle(ExcelWorkbook.GetWidthPixels(nf.Name, nf.Size));
+
+
+            foreach (var cell in this)
+            {
+                if (_worksheet.Column(cell.Start.Column).Hidden) //Issue 15338
+                    continue;
+
+                if (cell.Merge || cell.Style.WrapText) continue;
+                var fntID = styles.CellXfs[cell.StyleID].FontId;
+                Font f;
+                if (fontCache.ContainsKey(fntID))
+                {
+                    f = fontCache[fntID];
+                }
+                else
+                {
+                    var fnt = styles.Fonts[fntID];
+                    fs = FontStyle.Regular;
+                    if (fnt.Bold) fs |= FontStyle.Bold;
+                    if (fnt.UnderLine) fs |= FontStyle.Underline;
+                    if (fnt.Italic) fs |= FontStyle.Italic;
+                    if (fnt.Strike) fs |= FontStyle.Strikeout;
+                    f = _worksheet._package.ResolveAutoFitFont(fnt.Name, fnt.Size, fs);
+
+                    fontCache.Add(fntID, f);
+                }
+
+                var ind = styles.CellXfs[cell.StyleID].Indent;
+                var textForWidth = cell.TextForWidth;
+                var t = textForWidth + (ind > 0 && !string.IsNullOrEmpty(textForWidth) ? new string('_', ind) : "");
+                if (t.Length > 32000) t = t[..32000]; //Issue
+
+                var size = TextMeasurer.Measure(t, new TextOptions(f));
+                //var size = g.MeasureString(t, f, 10000, StringFormat.GenericDefault);
+
+                double width;
+                double r = styles.CellXfs[cell.StyleID].TextRotation;
+                if (r <= 0)
+                {
+                    width = (size.Width + 5) / normalSize;
+                }
+                else
+                {
+                    r = r <= 90 ? r : r - 90;
+                    width = ((size.Width - size.Height) * Math.Abs(Math.Cos(Math.PI * r / 180.0)) + size.Height + 5) /
+                            normalSize;
+                }
+
+                foreach (var a in afAddr)
+                    if (a.Collide(cell) != eAddressCollition.No)
+                    {
+                        width += 2.25;
+                        break;
+                    }
+
+                if (width > _worksheet.Column(cell._fromCol).Width)
+                    _worksheet.Column(cell._fromCol).Width = width > maximumWidth ? maximumWidth : width;
+            }
+
+            _worksheet.Drawings.AdjustWidth(drawWidths);
+        }
+        finally
+        {
+            _worksheet._package.DoAdjustDrawings = doAdjust;
+        }
     }
 
     private void SetMinWidth(double minimumWidth, int fromCol, int toCol)

@@ -214,3 +214,25 @@ derived code in this library is made freely available as open source under that 
 
 For licensing and provenance information about the open source code included in
 this package, see [THIRD-PARTY-NOTICES.txt](https://github.com/ellisnet/FreePPlus/blob/main/THIRD-PARTY-NOTICES.txt).
+
+## Auto-fit fonts on Android
+
+`AutoFitColumns()` uses managed font measurement. When a workbook font is not
+installed, it tries Roboto, Noto Sans, DejaVu Sans, Arial, then the first installed
+family by ordinal name. Workbook font styling is preserved; substitute metrics
+can produce different widths from Excel.
+
+For bundled fonts or a custom policy, set `ExcelPackage.AutoFitFontResolver`:
+
+```csharp
+var fonts = new CodeBrix.Imaging.Fonts.FontCollection();
+var family = fonts.Add(fontStream); // a readable TTF/OTF asset stream
+package.AutoFitFontResolver = (name, size, style) =>
+    new CodeBrix.Imaging.Fonts.Font(family, size, style);
+worksheet.Cells.AutoFitColumns();
+```
+
+Returning `null` uses system lookup and fallback. No available font produces an
+`InvalidOperationException` explaining how to supply one. The resolver belongs to
+one package and affects auto-fit measurement only; it does not affect
+`ExcelFont.SetFromFont()`. Use streams or app-private paths for Android file I/O.

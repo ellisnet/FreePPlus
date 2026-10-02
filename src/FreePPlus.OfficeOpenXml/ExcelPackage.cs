@@ -23,6 +23,7 @@
  * The author accepts no liability for any damage or loss of business that this product may cause.
  *
  * Code change notes:
+ * FreePPlus: Add per-package auto-fit font resolution and portable fallback.
  *
  * Author							Change						Date
  * ******************************************************************************
@@ -34,6 +35,7 @@
  *******************************************************************************/
 
 using CodeBrix.Imaging.Formats.Jpeg;
+using CodeBrix.Imaging.Fonts;
 using Microsoft.Extensions.Configuration;
 using OfficeOpenXml.Compatibility;
 using OfficeOpenXml.Encryption;
@@ -43,6 +45,7 @@ using OfficeOpenXml.Utils.CompundDocument;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -238,6 +241,40 @@ public sealed class ExcelPackage : IDisposable
     ///     Default True
     /// </summary>
     public bool DoAdjustDrawings { get; set; }
+
+    /// <summary>
+    ///     Optional per-package font resolver used by AutoFitColumns for measurement only.
+    /// </summary>
+    /// <remarks>
+    ///     Receives the workbook font name, point size and style. Return a font from any
+    ///     CodeBrix.Imaging FontCollection (including bundled fonts), or null to use system
+    ///     font resolution. Resolution tries the requested family, then Roboto, Noto Sans,
+    ///     DejaVu Sans, Arial, and finally the first installed family by ordinal name.
+    ///     No workbook font styles are changed. Configure before calling AutoFitColumns;
+    ///     exceptions from this callback propagate to the caller. If no font is available,
+    ///     auto-fit throws InvalidOperationException with instructions to supply one.
+    /// </remarks>
+    public Func<string, float, FontStyle, Font> AutoFitFontResolver { get; set; }
+
+    internal Font ResolveAutoFitFont(string name, float size, FontStyle style)
+    {
+        var resolved = AutoFitFontResolver?.Invoke(name, size, style);
+        if (resolved != null) return resolved;
+
+        if (SystemFonts.TryGet(name, out var requested))
+            return new Font(requested, size, style);
+
+        foreach (var fallback in new[] { "Roboto", "Noto Sans", "DejaVu Sans", "Arial" })
+            if (SystemFonts.TryGet(fallback, out var family))
+                return new Font(family, size, style);
+
+        foreach (var family in SystemFonts.Families.OrderBy(f => f.Name, StringComparer.Ordinal))
+            return new Font(family, size, style);
+
+        throw new InvalidOperationException(
+            "AutoFitColumns requires a font for measurement. Install a font or set " +
+            "ExcelPackage.AutoFitFontResolver to return a font loaded from an app asset or stream.");
+    }
 
     /// <summary>
     ///     Compression option for the package

@@ -59,10 +59,40 @@ Requirements / limits:
   -> Color, Image and Font types used by the public API come from
      CodeBrix.Imaging, not from System.Drawing. Add "using CodeBrix.Imaging;"
      whenever you touch a Color, an Image, or ExcelFont.SetFromFont.
-  -> AutoFitColumns() and SetFromFont() measure text with real font metrics. On
-     Linux, install a font family that ships bold and italic faces (for example
-     "sudo apt install fonts-dejavu") or measurement falls back to whatever is
-     present.
+  -> AutoFitColumns() uses managed font metrics. It tries the requested font,
+     then Roboto, Noto Sans, DejaVu Sans, Arial, then the first installed family
+     by ordinal name. This affects measurement only, not workbook styles.
+     Set ExcelPackage.AutoFitFontResolver to use bundled fonts; see below.
+     If no font is available, auto-fit throws an actionable
+     InvalidOperationException. SetFromFont() still requires a real Font.
+
+================================================================================
+
+AUTO-FIT FONTS ON ANDROID AND OTHER PLATFORMS
+===========================================
+AutoFitFontResolver is an optional per-ExcelPackage
+Func<string, float, CodeBrix.Imaging.Fonts.FontStyle, CodeBrix.Imaging.Fonts.Font>.
+It receives the workbook font name, point size and style. A non-null result
+controls measurement; null selects normal system lookup and fallback. Exceptions
+from your resolver propagate. Configure it before AutoFitColumns(); it is not
+saved into the workbook, and font names/styles in cells are never replaced.
+
+For a bundled font, open the Android asset as a stream in your application:
+
+    using CodeBrix.Imaging.Fonts;
+
+    var fonts = new FontCollection();
+    var family = fonts.Add(fontStream);  // caller supplies a readable TTF/OTF stream
+    package.AutoFitFontResolver = (name, size, style) =>
+        new Font(family, size, style);
+    worksheet.Cells.AutoFitColumns();
+
+This also works with fonts loaded from ordinary files. The resolver is local to
+one package, so different workbooks can use different font policies. Existing
+minimum/maximum width limits still apply. When a resolver fails, the previous
+DoAdjustDrawings setting is restored; column widths already changed are not
+rolled back. Use app-private paths or streams when loading/saving workbooks on
+Android; this library does not request storage permissions or open Android URIs.
 
 ================================================================================
 
@@ -2155,9 +2185,12 @@ COMMON PITFALLS TO AVOID
 19. Chart type names are XYScatter / XYScatterLines / XYScatterSmooth, not
     Scatter / ScatterLines / ScatterSmooth.
 
-20. On Linux, AutoFitColumns() and ExcelFont.SetFromFont() need real fonts,
-    including bold and italic faces. Install a family such as DejaVu
-    ("sudo apt install fonts-dejavu") on slim containers.
+20. AutoFitColumns() needs a real font for measurement. Missing workbook fonts
+    use an installed fallback, or your per-package AutoFitFontResolver. Android
+    system fonts are discovered by CodeBrix.Imaging; desktop fonts such as
+    Calibri need not be installed. A substitute's widths may differ from Excel.
+    On systems without fonts, supply a FontCollection loaded from app assets or
+    streams. ExcelFont.SetFromFont() does not use this measurement resolver.
 
 21. Only .xlsx / .xlsm (Office Open XML) is supported. Legacy .xls will not
     open.
