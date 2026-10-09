@@ -89,7 +89,7 @@ SAMPLE DATA FILES
     Resources/file_icon.png, folder_icon.png  images for sample 6
     VBA-Code/*.txt                            VBA source for sample 15
 
-The two database samples (3, 4 and 12) need a local SQL Server with the
+The three database samples (3, 4 and 12) need a local SQL Server with the
 AdventureWorksLT2022 database; they fail with a connection error otherwise,
 which the sample runner catches and reports.
 
@@ -108,6 +108,3 @@ and imaging tests.
 
 OTHER NON-PACKAGE CONTENT
 =========================
-    nuspec/     A hand-written .nuspec with placeholder docs/ and lib/ folders,
-                left over from an earlier packaging approach. The current build
-                packs from the csproj and does not use it.

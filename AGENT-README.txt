@@ -150,7 +150,7 @@ Every item below has a section in this file with real signatures:
   -> Named ranges, named values, named formulas
   -> Bulk loading: collections, DataTable, IDataReader, object[] arrays, CSV
   -> Tables with table styles and totals rows
-  -> Conditional formatting: ~55 rule types in 8 families
+  -> Conditional formatting: 45 rule types in 9 families
   -> Pivot tables with row/column/page/data fields and grouping
   -> Charts: 70+ chart types, titles, legends, axes, series, secondary axes,
      combo charts, chart sheets
@@ -949,7 +949,7 @@ THE RULE FAMILIES AND THEIR Add* METHODS
 
 The concrete rule classes (ExcelConditionalFormattingAboveAverage,
 ...Between, ...ContainsText, ...DataBar, ...ThreeIconSet, ...TwoColorScale and
-about fifty siblings under OfficeOpenXml.ConditionalFormatting) are created for
+their siblings under OfficeOpenXml.ConditionalFormatting) are created for
 you by the Add* methods. Program against the interfaces; you never need to
 construct a rule class directly.
 
@@ -1887,6 +1887,7 @@ Example 7: Pivot table over a loaded collection
 -----------------------------------------------
     using System.IO;
     using OfficeOpenXml;
+    using OfficeOpenXml.Drawing.Chart;
     using OfficeOpenXml.Table;
     using OfficeOpenXml.Table.PivotTable;
 

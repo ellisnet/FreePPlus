@@ -84,7 +84,7 @@ using (var range = ws.Cells["A1:D1"])
 {
     range.Style.Font.Bold = true;
     range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-    range.Style.Fill.BackgroundColor.SetColor(0, 0, 51, 102);    // dark blue
+    range.Style.Fill.BackgroundColor.SetColor(255, 0, 51, 102);  // dark blue
     range.Style.Font.Color.SetColor(255, 255, 255, 255);         // white
 }
 

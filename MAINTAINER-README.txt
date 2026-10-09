@@ -37,11 +37,6 @@ REPOSITORY LAYOUT
     FreePPlus.slnx          Solution (XML slnx format): library, tests, sample
                             app, plus a "Solution Items" folder carrying the
                             root files.
-    nuspec/                 A hand-written .nuspec kept from an earlier
-                            packaging approach, with placeholder docs/ and
-                            lib/ folders. It is NOT used by the current build,
-                            which packs from the csproj
-                            (GeneratePackageOnBuild). Treat it as historical.
     src/FreePPlus.OfficeOpenXml/    The library.
     tests/FreePPlus.OfficeOpenXml.Tests/    xUnit v3 test project.
     samples/FreePPlus.OfficeOpenXml.SampleApp/   Console sample app (see
@@ -57,7 +52,7 @@ under OfficeOpenXml:
                         comments, named ranges and the cell store.
     Compatibility/      CompatibilitySettings.
     ConditionalFormatting/  Collection, enums, helpers; Contracts/ holds the
-                        public rule interfaces and Rules/ the ~55 concrete rule
+                        public rule interfaces and Rules/ the concrete rule
                         classes.
     DataValidation/     Validation types; Contracts/ and Formulas/ mirror the
                         same split.
@@ -127,7 +122,7 @@ Leave them commented; do not "fix" them by inventing data files.
 
 PACKAGING AND PUBLISHING
 ========================
-Packing is driven by the library csproj, not by nuspec/. Versioning is the
+Packing is driven by the library csproj (GeneratePackageOnBuild). Versioning is the
 date-stamped, auto-incrementing scheme shared across the CodeBrix family:
 
     1.<years since _VersionBaseYear>.<UTC day of year>.<UTC minute of day>
@@ -143,10 +138,6 @@ Because the version moves with the clock, no version number belongs in
 AGENT-README.txt, README.md or any other documentation file -- not even the
 upstream release this project forked from. That belongs in
 THIRD-PARTY-NOTICES.txt, and the provenance statements elsewhere point there.
-
-The nuspec/ folder is stale: it pins an old version, targets net8.0 and
-references a FreePPlus.Imaging.dll that no longer exists. Do not resurrect it
-without reconciling it with the csproj metadata.
 
 PROVENANCE AND VENDORED SOURCES
 ===============================
