@@ -32,6 +32,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using OfficeOpenXml.Compatibility;
 
@@ -41,7 +42,7 @@ namespace OfficeOpenXml.VBA;
 ///     Base class for VBA collections
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class ExcelVBACollectionBase<T> : IEnumerable<T>
+public class ExcelVBACollectionBase<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEnumerable<T>
 {
     protected internal List<T> _list = new();
 

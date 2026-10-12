@@ -37,6 +37,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -1925,7 +1926,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     /// <typeparam name="T">The datatype in the collection</typeparam>
     /// <param name="Collection">The collection to load</param>
     /// <returns>The filled range</returns>
-    public ExcelRangeBase LoadFromCollection<T>(IEnumerable<T> Collection)
+    public ExcelRangeBase LoadFromCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] T>(IEnumerable<T> Collection)
     {
         return LoadFromCollection(Collection, false, TableStyles.None, BindingFlags.Public | BindingFlags.Instance,
             null);
@@ -1943,7 +1944,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     ///     the reflected member name.
     /// </param>
     /// <returns>The filled range</returns>
-    public ExcelRangeBase LoadFromCollection<T>(IEnumerable<T> Collection, bool PrintHeaders)
+    public ExcelRangeBase LoadFromCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] T>(IEnumerable<T> Collection, bool PrintHeaders)
     {
         return LoadFromCollection(Collection, PrintHeaders, TableStyles.None,
             BindingFlags.Public | BindingFlags.Instance, null);
@@ -1962,7 +1963,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     /// </param>
     /// <param name="TableStyle">Will create a table with this style. If set to TableStyles.None no table will be created</param>
     /// <returns>The filled range</returns>
-    public ExcelRangeBase LoadFromCollection<T>(IEnumerable<T> Collection, bool PrintHeaders, TableStyles TableStyle)
+    public ExcelRangeBase LoadFromCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] T>(IEnumerable<T> Collection, bool PrintHeaders, TableStyles TableStyle)
     {
         return LoadFromCollection(Collection, PrintHeaders, TableStyle, BindingFlags.Public | BindingFlags.Instance,
             null);
@@ -1982,7 +1983,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
     /// <param name="memberFlags">Property flags to use</param>
     /// <param name="Members">The properties to output. Must be of type T</param>
     /// <returns>The filled range</returns>
-    public ExcelRangeBase LoadFromCollection<T>(IEnumerable<T> Collection, bool PrintHeaders, TableStyles TableStyle,
+    public ExcelRangeBase LoadFromCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] T>(IEnumerable<T> Collection, bool PrintHeaders, TableStyles TableStyle,
         BindingFlags memberFlags, MemberInfo[] Members)
     {
         var type = typeof(T);
@@ -2048,7 +2049,7 @@ public class ExcelRangeBase : ExcelAddress, IExcelCell, IDisposable, IEnumerable
                 values[row, col++] = item;
             else
                 foreach (var t in Members)
-                    if (isSameType == false && item.GetType().GetMember(t.Name, memberFlags).Length == 0)
+                    if (isSameType == false && t.DeclaringType != null && !t.DeclaringType.IsInstanceOfType(item))
                         col++;
                     //Check if the property exists if and inherited class is used
                     else if (t is PropertyInfo)

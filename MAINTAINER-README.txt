@@ -208,3 +208,25 @@ NOTES
   -> AutoFitColumns and ExcelFont.SetFromFont depend on real font metrics. On
      Linux build agents, install a font family with bold and italic faces
      (fonts-dejavu) before running the font-sensitive tests.
+  -> TRIMMING: the assembly is trim-clean. A fully trimmed publish of a small
+     console app referencing the project, with
+     <TrimmerRootAssembly Include="FreePPlus.OfficeOpenXml" /> so every type
+     is analysed (PublishTrimmed=true, TrimmerSingleWarn=false, -r linux-x64),
+     reports no ILLink warnings. It used to report three, surfacing as
+     "IL2104: Assembly 'FreePPlus.OfficeOpenXml' produced trim warnings" in
+     trimmed consumers:
+       - TypeCompat.GetPropertyValue read "Name" through v.GetType(); it is
+         now generic over a [DynamicallyAccessedMembers(PublicProperties)] T,
+         and ExcelVBACollectionBase<T> carries the same annotation (every T -
+         module, reference, module attribute - declares Name on itself or its
+         base, so typeof(T) finds the same property).
+       - LoadFromCollection<T> called typeof(T).GetProperties(memberFlags);
+         all four overloads now annotate T with Public|NonPublicProperties.
+       - LoadFromCollection<T> checked item.GetType().GetMember(t.Name) to
+         skip members an item lacks when Members spans T and derived types.
+         It now asks t.DeclaringType.IsInstanceOfType(item) - which also
+         fixes a TargetException when a sibling type had a same-named member.
+     LoadFromCollectionTests (the two LeavesCellEmpty tests) and VBATests
+     (AddDerivedReference_CanBeRetrievedByName,
+     ModuleAttributes_CanBeRetrievedByName) fence these. Re-run that trimmed
+     publish after adding reflection.

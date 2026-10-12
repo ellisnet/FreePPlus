@@ -553,6 +553,35 @@ public class VBATests
         Assert.Equal("Scripting", reference.Name);
     }
 
+    [Fact]
+    public void AddDerivedReference_CanBeRetrievedByName()
+    {
+        using var package = new ExcelPackage();
+        package.Workbook.Worksheets.Add("Sheet1");
+        package.Workbook.CreateVBAProject();
+
+        package.Workbook.VbaProject.References.Add(new ExcelVbaReferenceControl { Name = "MSForms" });
+
+        var references = package.Workbook.VbaProject.References;
+        Assert.True(references.Exists("msforms"));
+        Assert.IsType<ExcelVbaReferenceControl>(references["MSForms"]);
+        Assert.False(references.Exists("Missing"));
+        Assert.Null(references["Missing"]);
+    }
+
+    [Fact]
+    public void ModuleAttributes_CanBeRetrievedByName()
+    {
+        using var package = new ExcelPackage();
+        package.Workbook.Worksheets.Add("Sheet1");
+        package.Workbook.CreateVBAProject();
+
+        var cls = package.Workbook.VbaProject.Modules.AddClass("Class1", true);
+
+        Assert.True(cls.Attributes.Exists("VB_Exposed"));
+        Assert.Equal("True", cls.Attributes["VB_Exposed"].Value);
+    }
+
     #endregion
 
     #region Round-Trip Persistence

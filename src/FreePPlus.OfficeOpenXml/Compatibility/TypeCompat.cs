@@ -30,6 +30,7 @@
  *******************************************************************************/
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace OfficeOpenXml.Compatibility;
@@ -51,8 +52,8 @@ internal class TypeCompat
         return t.GetTypeInfo().IsGenericType;
     }
 
-    public static object GetPropertyValue(object v, string name)
+    public static object GetPropertyValue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(T v, string name)
     {
-        return v.GetType().GetTypeInfo().GetProperty(name)?.GetValue(v, null);
+        return typeof(T).GetProperty(name)?.GetValue(v, null);
     }
 }

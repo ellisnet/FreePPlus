@@ -25,6 +25,15 @@ public class LoadFromCollectionTests
         public int Number { get; set; }
     }
 
+    internal class OtherImplementation : BaseClass
+    {
+        public int Number { get; set; }
+    }
+
+    internal class PlainImplementation : BaseClass
+    {
+    }
+
     internal class Aclass
     {
         public string Id { get; set; }
@@ -495,6 +504,59 @@ public class LoadFromCollectionTests
         Assert.Throws<InvalidCastException>(() =>
             sheet.Cells["C1"].LoadFromCollection(items, true, TableStyles.Dark1,
                 BindingFlags.Public | BindingFlags.Instance, typeof(string).GetMembers()));
+    }
+
+    [Fact]
+    public void LoadFromCollectionLeavesCellEmptyForItemWithoutDerivedMember()
+    {
+        var items = new List<BaseClass>
+        {
+            new Implementation { Id = "1", Name = "A", Number = 7 },
+            new PlainImplementation { Id = "2", Name = "B" }
+        };
+        var members = new MemberInfo[]
+        {
+            typeof(BaseClass).GetProperty(nameof(BaseClass.Id)),
+            typeof(Implementation).GetProperty(nameof(Implementation.Number))
+        };
+
+        using var pck = new ExcelPackage(new MemoryStream());
+        var sheet = pck.Workbook.Worksheets.Add("sheet");
+
+        sheet.Cells["A1"].LoadFromCollection(items, false, TableStyles.None,
+            BindingFlags.Public | BindingFlags.Instance, members);
+
+        Assert.Equal("1", sheet.Cells["A1"].Value);
+        Assert.Equal(7, sheet.Cells["B1"].Value);
+        Assert.Equal("2", sheet.Cells["A2"].Value);
+        Assert.Null(sheet.Cells["B2"].Value);
+    }
+
+    [Fact]
+    public void LoadFromCollectionLeavesCellEmptyForSiblingTypeWithSameNamedMember()
+    {
+        //A sibling type's same-named property is a different member: it used to be matched by
+        //name and then read through the other type's PropertyInfo, which threw TargetException.
+        var items = new List<BaseClass>
+        {
+            new Implementation { Id = "1", Name = "A", Number = 7 },
+            new OtherImplementation { Id = "2", Name = "B", Number = 9 }
+        };
+        var members = new MemberInfo[]
+        {
+            typeof(BaseClass).GetProperty(nameof(BaseClass.Id)),
+            typeof(Implementation).GetProperty(nameof(Implementation.Number))
+        };
+
+        using var pck = new ExcelPackage(new MemoryStream());
+        var sheet = pck.Workbook.Worksheets.Add("sheet");
+
+        sheet.Cells["A1"].LoadFromCollection(items, false, TableStyles.None,
+            BindingFlags.Public | BindingFlags.Instance, members);
+
+        Assert.Equal(7, sheet.Cells["B1"].Value);
+        Assert.Equal("2", sheet.Cells["A2"].Value);
+        Assert.Null(sheet.Cells["B2"].Value);
     }
 
     #endregion

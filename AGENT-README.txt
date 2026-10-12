@@ -65,6 +65,13 @@ Requirements / limits:
      Set ExcelPackage.AutoFitFontResolver to use bundled fonts; see below.
      If no font is available, auto-fit throws an actionable
      InvalidOperationException. SetFromFont() still requires a real Font.
+  -> Trimming: trim-clean - a fully trimmed publish (PublishTrimmed, and
+     Android Release builds) reports no trim warnings for this assembly.
+     LoadFromCollection<T> reads T's properties by reflection; its T is
+     annotated, so the trimmer keeps them when you pass a concrete type. If
+     you call it from your OWN generic method, annotate that type parameter
+     with [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
+     .PublicProperties)] (the trimmer reports IL2091 until you do).
 
 ================================================================================
 
@@ -739,6 +746,9 @@ Derived-class properties are emitted BEFORE base-class properties, which
 decides column order for inherited types.
 Passing an EMPTY MemberInfo[] throws ArgumentException ("Parameter Members must
 have at least one property"). Pass null to mean "all properties".
+When Members mixes members of T and of types derived from T, an item that is
+not an instance of a member's declaring type leaves that member's cell empty
+(a sibling type's same-named property is NOT used).
 The return value is the filled range (useful for AutoFitColumns and for feeding
 a pivot table); it can be null when the collection is empty and PrintHeaders is
 false.
